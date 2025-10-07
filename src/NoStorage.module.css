@@ -1,0 +1,5 @@
+.Page {
+	align-content: center;
+	background-color: var(--danger);
+	color: var(--white);
+}

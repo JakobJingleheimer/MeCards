@@ -1,0 +1,55 @@
+{
+  "name": "mecards",
+  "version": "0.0.1",
+  "description": "Store membership and points cards persistently. This PWA must be installed for persistent storage to be allowed by the device.",
+  "keywords": [
+    "barcodes",
+    "persistent storage",
+    "PWA",
+    "mobile web app",
+    "membership cards"
+  ],
+  "homepage": "https://github.com/JakobJingleheimer/mecards#readme",
+  "bugs": {
+    "url": "https://github.com/JakobJingleheimer/mecards/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakobJingleheimer/mecards.git"
+  },
+  "license": "MIT",
+  "author": "JakobJingleheimer",
+  "type": "module",
+  "main": "./src/main.tsx",
+  "scripts": {
+    "build": "rm -rf ./dist && node ./build/prod.ts",
+    "build:prod": "NODE_ENV=production node --run build",
+    "dev": "NODE_ENV=development rm -rf ./dist && node ./build/dev.ts",
+    "start": "node --run build && node --run serve",
+    "start:prod": "node --run build:prod && node --run serve",
+    "serve": "http-server ./dist",
+    "test": "node --test",
+    "types:check": "tsgo --noEmit ./src/**/*"
+  },
+  "dependencies": {
+    "jsbarcode": "^3.12.1",
+    "kelpui": "^1.6.3",
+    "nanoid": "^5.1.6",
+    "preact": "^10.27.2",
+    "preact-iso": "^2.11.0",
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat"
+  },
+  "devDependencies": {
+    "@testing-library/preact": "^3.2.4",
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^24.7.0",
+    "@typescript/native-preview": "^7.0.0-dev.20251007.1",
+    "ejs": "^3.1.10",
+    "esbuild": "^0.25.9",
+    "esbuild-plugin-svgr": "^3.1.1"
+  },
+  "optionalDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
