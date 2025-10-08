@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<% if (assets.webmanifest) { %><link rel="manifest" href="<%= assets.webmanifest %>" /><% } %>
+		<% if (assets.favicon) { %><link rel="icon" href="<%= assets.favicon %>" /><% } %>
 		<% for (const href of assets.css) { %><link rel="stylesheet" href="<%= href %>" /><% } %>
 		<% for (const { isModule, src } of assets.scripts) { %><script src="<%= src %>" type="module"></script><% } %>
 

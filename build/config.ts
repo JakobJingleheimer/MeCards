@@ -14,6 +14,7 @@ export const config = {
 	],
 	format: 'esm',
 	loader: {
+		'.ico': 'copy',
 		'.webmanifest': 'copy',
 		'.woff2': 'file',
 	},
