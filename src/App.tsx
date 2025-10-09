@@ -3,52 +3,42 @@ import {
 	LocationProvider,
 	ErrorBoundary,
 	Router,
-	Route
+	Route,
 } from 'preact-iso';
 
 import 'kelpui/css/kelp.css';
 
+import BarcodeScanner from './icons/barcode-scanner.svg';
 import Menu from './icons/menu.svg';
 import styles from './App.module.css';
-import { useState, useEffect } from 'preact/hooks';
+import CheckPrerequisites from './CheckPrerequisites.tsx';
 
 const CardEdit = lazy(() => import('./CardEdit.tsx'));
 const CardList = lazy(() => import('./CardList.tsx'));
-const Welcome = lazy(() => import('./Welcome.tsx'));
+const Install = lazy(() => import('./Install.tsx'));
 const NoStorage = lazy(() => import('./NoStorage.tsx'));
 
 export function App() {
-	const [installed, setInstalleded] = useState<boolean | null>(null);
-	const [persisted, setPersisted] = useState<boolean | null>(null);
-
-	useEffect(() => {
-		setInstalleded(window.matchMedia('(display-mode: standalone)').matches);
-
-		if (typeof navigator.storage?.persist !== 'function') setPersisted(false);
-		else navigator.storage.persist().then(setPersisted);
-	}, []);
-
 	return (
 		<LocationProvider>
 			<ErrorBoundary>
-				<header className="grid" id={styles.head}>
-					<Menu className={styles.logo} />
-				</header>
+				<CheckPrerequisites>
+					<Router>
+						<Route path="/install" component={Install} />
+						<Route path="/no-storage" component={NoStorage} />
+						<Route path="/" component={CardList} />
+						<Route path="/edit/:id" component={CardEdit} />
+					</Router>
+				</CheckPrerequisites>
 
-				<Router>
-						{
-							installed === false
-							? <Welcome />
-							: persisted === false
-							? <NoStorage />
-							: (
-								<>
-									<Route path="/" component={CardList} />
-									<Route path="/edit/:id" component={CardEdit} />
-								</>
-							)
-						}
-				</Router>
+				<footer className="container flex gap-m justify-center" id={styles.head}>
+					<a href="/">
+						<Menu className="size-2xl" />
+					</a>
+					<a href="/edit/new">
+						<BarcodeScanner className="size-2xl" />
+					</a>
+				</footer>
 			</ErrorBoundary>
 		</LocationProvider>
 	);
