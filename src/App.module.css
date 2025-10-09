@@ -1,3 +1,18 @@
-.logo {
+:where(:root), :global(.dark) {
+	--color-background: #1C9AF3;
+}
+
+:where(:root) {
+	main {
+		align-content: end;
+		flex: 1;
+	}
+
+	svg[class*=size-] {
+		width: var(--font-size);
+	}
+}
+
+.CardListIcon {
 	width: 2rem;
 }
