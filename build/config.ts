@@ -11,6 +11,7 @@ export const config = {
 	bundle: true,
 	entryPoints: [
 		fileURLToPath(import.meta.resolve('../src/main.tsx')),
+		fileURLToPath(import.meta.resolve('../src/service-worker.ts')),
 	],
 	format: 'esm',
 	loader: {

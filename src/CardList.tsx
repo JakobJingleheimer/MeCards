@@ -1,21 +1,16 @@
-import { useEffect, useState } from 'preact/hooks';
-
-import type { CardsData } from './Card.d.ts';
+import { data } from './storage/data.ts';
+import { media } from './storage/media.ts';
 
 function CardList() {
-	const [list, setList] = useState<CardsData>();
+	const cards = Array.from(data.getAll());
 
-	useEffect(() => {
-		setList({ ...localStorage });
-	}, []);
-
-	if (!list) return <main>Loading…</main>;
+	console.log('cards:', cards)
 
 	return (
-		<main>
-			{Object.entries(list).map(([id, { barcode, label }]) => (
+		<main className="container">
+			{cards.map(([id, { barcode, label }]) => (
 				<figure>
-					<img alt={barcode} src={`/cards/${id}`} />
+					<img alt={barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
 					<figcaption>{label}</figcaption>
 				</figure>
 			))}
