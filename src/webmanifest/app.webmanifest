@@ -1,0 +1,8 @@
+{
+	"name": "MeCards",
+	"background_color": "#1C9AF3",
+	"theme_color": "#1C9AF3",
+	"display": "standalone",
+	"start_url": "/",
+	"prefer_related_applications": false
+}

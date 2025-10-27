@@ -4,8 +4,6 @@ import { media } from './storage/media.ts';
 function CardList() {
 	const cards = Array.from(data.getAll());
 
-	console.log('cards:', cards)
-
 	return (
 		<main className="container">
 			{cards.map(([id, { barcode, label }]) => (

@@ -1,6 +1,6 @@
 import { type BuildOptions, type Metafile } from 'esbuild';
 
-export function composeManifest(metafile: Metafile, buildConfig: BuildOptions) {
+export function composeBuildMetadata(metafile: Metafile, buildConfig: BuildOptions) {
 	const assets = {
 		css: [] as string[],
 		favicon: '',

@@ -9,7 +9,7 @@ import {
 	type Plugin,
 } from 'esbuild';
 
-import { composeManifest } from './manifest.ts';
+import { composeBuildMetadata } from './build-metadata.ts';
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
@@ -33,7 +33,7 @@ export const compileIndexEJS = (
 		const tmpl = await readFile(templatePath, 'utf8');
 
 		onEnd(async ({ metafile }) => {
-			const assets = composeManifest(metafile!, buildConfig);
+			const assets = composeBuildMetadata(metafile!, buildConfig);
 
 			await writeFile(
 				path.join(buildConfig.outdir!, 'index.html'),
