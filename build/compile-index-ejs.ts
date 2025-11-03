@@ -1,5 +1,6 @@
 import {
 	readFile,
+	rename,
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
@@ -13,16 +14,18 @@ import { composeBuildMetadata } from './build-metadata.ts';
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
-	hot: true,
+	hot: boolean,
 }>;
 
-export const compileIndexEJS = (
-	templatePath: string,
+const defaultFilename = 'index.ejs';
+export const compileIndexEJSPlugin = (
+	filename: string = defaultFilename,
 	{
 		env,
 		hot,
 	}: IndexEJSOptions = {
 		env: process.env.NODE_ENV,
+		hot: 'HMR' in process.env,
 	},
 ): Plugin => ({
 	name: 'Compile index.ejs',
@@ -30,19 +33,71 @@ export const compileIndexEJS = (
 		const buildConfig = initialOptions;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const tmpl = await readFile(templatePath, 'utf8');
+		const { entryPoints } = initialOptions;
 
-		onEnd(async ({ metafile }) => {
+		if (!entryPoints) throw new Error('BuildOptions.entryPoints is required');
+
+		let templatePath = '';
+
+		for ( const item of
+			Array.isArray(entryPoints) ? entryPoints : Object.values(entryPoints)
+		) {
+			const input = typeof item === 'string' ? item : item.in;
+
+			if (input.endsWith(filename)) {
+				templatePath = input;
+				break;
+			}
+		};
+
+		if (!templatePath) {
+			const msg = [`No entry-point found for EJS template "${defaultFilename}".`];
+			if (filename === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+
+			throw new Error(msg.join(' '));
+		}
+
+		const encoder = new TextEncoder();
+		const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
+
+		onEnd(async ({ outputFiles, metafile }) => {
+			const tmpl = await readFile(templatePath, 'utf8');
 			const assets = composeBuildMetadata(metafile!, buildConfig);
 
-			await writeFile(
-				path.join(buildConfig.outdir!, 'index.html'),
-				ejs.render(tmpl, {
-					assets,
-					env: process.env.NODE_ENV,
-					hot: 'HMR' in process.env,
-				})
-			);
+			const compiledHTML = ejs.render(tmpl, {
+				assets,
+				env,
+				hot,
+			});
+
+			if (initialOptions.write !== false) {
+				const ogOutname = path.join(buildConfig.outdir!, filename);
+				await writeFile(
+					ogOutname,
+					compiledHTML,
+				);
+				await rename(
+					ogOutname,
+					path.join(buildConfig.outdir!, 'index.html'),
+				);
+			} else {
+				const entry = outputFiles!.find((item) => item.path.endsWith(filename));
+
+				if (!entry) {
+					const msg = [`No entry found for "${templatePath}".`];
+					if (filename === defaultFilename) {
+						msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+					}
+					throw new Error(msg.join(' '));
+				}
+
+				// convertOutputFiles
+				entry.contents = encodeUTF8(compiledHTML);
+				entry.path = entry.path.replace('.ejs', '.html');
+
+				console.log('entry.hash:', entry.hash);
+			}
 		});
 	},
 });
+
