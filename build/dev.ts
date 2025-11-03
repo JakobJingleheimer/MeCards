@@ -13,14 +13,8 @@ const serveOpts: ServeOptions = {
 	servedir: outdir,
 };
 
-const ctx = await context(config);
+const ctx = await context({ ...config, logLevel: 'info' });
 
 await ctx.watch();
 
-const details = await ctx.serve(serveOpts);
-const protocol = 'certfile' in serveOpts && 'keyfile' in serveOpts ? 'https' : 'http';
-
-console.log(
-	`[esbuild server]: Listening on`,
-	...details.hosts.map((host) => `\n  ${protocol}://${host}:${details.port}`)
-);
+await ctx.serve(serveOpts);
