@@ -31,11 +31,11 @@ export function App() {
 					</Router>
 				</CheckPrerequisites>
 
-				<footer className="container flex gap-m justify-center" id={styles.head}>
-					<a href="/">
+				<footer className="flex gap-m justify-center padding-4xs" id={styles.head}>
+					<a className="flex-inline" href="/">
 						<Menu className="size-2xl" />
 					</a>
-					<a href="/edit/new">
+					<a className="flex-inline" href="/edit/new">
 						<BarcodeScanner className="size-2xl" />
 					</a>
 				</footer>

@@ -55,9 +55,13 @@ function CardEdit() {
 	};
 
 	return (
-		<main className="container">
+		<main className="padding-m">
 			{/* camera scanner */}
-			<form id={FORM_ID} onSubmit={onSubmit}>
+			<form
+				className="container stack"
+				id={FORM_ID}
+				onSubmit={onSubmit}
+			>
 				<img src={logo} />
 
 				<label>
@@ -86,9 +90,13 @@ function CardEdit() {
 						placeholder="Whatever you want"
 					/>
 				</label>
-			</form>
 
-			<button form={FORM_ID}>Save</button>
+				<div className="split">
+					<button type="reset">Reset</button>
+
+					<button className="primary" type="submit">Save</button>
+				</div>
+			</form>
 		</main>
 	);
 }

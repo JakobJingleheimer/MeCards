@@ -1,16 +1,47 @@
-:where(:root), :global(.dark) {
-	--color-background: #1C9AF3;
+@layer kelp.theme {
+	:where(:root) {
+		--color-blue-base: #1C9AF3;
+		--color-blue-hue: 246.74;
+		--color-blue-chroma: 0.9484760980127133;
+	}
 }
 
-:where(:root) {
-	main {
-		align-content: end;
-		flex: 1;
-	}
+/* :where(:root) :global(.light) {
+	--color-background: #1C9AF3;
+} */
 
-	svg[class*=size-] {
-		width: var(--font-size);
-	}
+html {
+	display: block;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+input, textarea, select {
+	background-color: var(--color-blue-base);
+	color: var(--color-background);
+}
+input::placeholder,
+select::placeholder,
+textarea::placeholder
+{
+	color: var(--color-blue-95);
+}
+
+main {
+	align-content: end;
+	flex: 1;
+	overflow-y: auto;
+}
+
+body > footer {
+	box-shadow: 0 calc(-1 * var(--size-5xs)) var(--size-5xs) var(--color-gray-90);
+}
+
+svg[class*=size-] {
+	width: var(--font-size);
 }
 
 .CardListIcon {
