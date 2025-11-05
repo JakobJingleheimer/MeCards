@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 import { type BuildOptions } from 'esbuild';
 import svgr from 'esbuild-plugin-svgr';
 
-import { compileWebmanifest } from './compile-webmanifest.ts';
 import { compileIndexEJSPlugin } from './compile-index-ejs.ts';
+import { compileWebmanifestPlugin } from './compile-webmanifest.ts';
 
 export const outdir = fileURLToPath(import.meta.resolve('../dist'));
 
@@ -12,16 +12,15 @@ export const config: BuildOptions = {
 	bundle: true,
 	entryPoints: [
 		fileURLToPath(import.meta.resolve('../src/main.tsx')),
-		fileURLToPath(import.meta.resolve('../src/webmanifest/app.webmanifest')),
 		fileURLToPath(import.meta.resolve('../src/index.ejs')),
+		fileURLToPath(import.meta.resolve('../src/webmanifest/webmanifest.ts')),
 		fileURLToPath(import.meta.resolve('../src/service-worker.ts')),
 	],
 	format: 'esm',
 	loader: {
 		'.ico': 'copy',
 		'.ejs': 'copy',
-		'.png': 'copy',
-		// '.webmanifest': 'copy',
+		'.png': 'file',
 		'.woff2': 'file',
 	},
 	metafile: true,
@@ -29,9 +28,10 @@ export const config: BuildOptions = {
 	jsxImportSource: 'preact',
 	plugins: [
 		svgr(),
-		compileWebmanifest(),
+		compileWebmanifestPlugin(),
 		compileIndexEJSPlugin(),
 	],
 	outdir,
-	splitting: true,
+	splitting: false, // https://github.com/evanw/esbuild/issues/4321
+	// write: false,
 } as const;

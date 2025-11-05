@@ -1,127 +1,164 @@
 import {
-	copyFile,
-	readdir,
 	readFile,
-	stat,
+	rename,
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
 
 import {
+	type BuildOptions,
+	type BuildResult,
 	type Plugin,
 } from 'esbuild';
-import type { WebAppManifest } from 'web-app-manifest';
+
+import { findEntrypoint } from './find-entrypoint.ts';
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
 	hot: true,
 }>;
 
-export const compileWebmanifest = (): Plugin => ({
+const encoder = new TextEncoder();
+const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
+
+const defaultFilename = 'webmanifest.ts';
+export const compileWebmanifestPlugin = (filename: string = defaultFilename): Plugin => ({
 	name: 'Compile app.webmanifest',
-	async setup({ onEnd, onLoad, resolve }) {
-		onLoad({ filter: /\.webmanifest/ }, async ({ path: manifestFSPath }) => {
-			// const contents = await getManifestContents(filepath);
-			console.log('filepath:', manifestFSPath)
-			let contents = await readFile(manifestFSPath, 'utf8');
+	async setup({ initialOptions, onEnd }) {
+		const outdir = initialOptions.outdir!;
+		const outdirName = path.basename(outdir);
 
-			const iconsBaseFSPath = path.join(path.dirname(manifestFSPath), 'icons');
-			const icons = [];
-			for (const iconFilename of await readdir(iconsBaseFSPath)) {
-				if (!iconFilename.endsWith('.png')) continue;
+		const originalOutputFilename = filename.replace(path.extname(filename), '.js');
+		const originalPath = findEntrypoint(initialOptions, filename);
 
-				const iconFSPath = path.join(iconsBaseFSPath, iconFilename);
+		onEnd(async ({ metafile, outputFiles }) => {
+			const {
+				finalOutputPath,
+				originalOutputPath,
+			} = initialOptions.write === false
+				? await composeForStream(initialOptions, outputFiles, { filename, originalOutputFilename })
+				: await composeForFS(initialOptions, originalPath);
 
-				icons.push(iconFSPath);
+			if (metafile) {
+				const originalOutputSegment = path.join(
+					outdirName,
+					originalOutputPath.replace(outdir, ''),
+				);
+				const finalOutputSegment = path.join(
+					outdirName,
+					finalOutputPath.replace(outdir, ''),
+				);
 
-				console.log('resolve result:', await resolve(`./icons/${iconFilename}`, {
-					importer: manifestFSPath,
-					kind: 'import-statement',
-					namespace: 'file',
-					resolveDir: path.join(path.dirname(manifestFSPath), 'icons'),
-				}));
+				metafile.outputs[finalOutputSegment] = metafile.outputs[originalOutputSegment]!;
+
+				delete metafile.outputs[originalOutputSegment];
 			}
-
-			console.log('[Compile app.webmanifest] icons:', icons)
-
-			contents = JSON.stringify(Object.assign(JSON.parse(contents), {
-				icons: icons.map((iconFSPath) => {
-					const size = path.basename(iconFSPath, '.png');
-
-					return {
-						"src": `./icons/${size}.png`,
-						"type": "image/png",
-						"sizes": `${size}x${size}`,
-					};
-				}),
-			}), null, 2);
-
-			// if (!contents) return;
-
-			// const icons = contents.icons.map((filepath) => {
-			// 	copyFile(filepath)
-			// });
-
-			return {
-				contents,
-				loader: 'copy',
-				watchFiles: icons,
-			};
-		});
-
-		onEnd(async ({ metafile }) => {
-			console.log('metafile:', metafile)
 		});
 	},
 });
 
-function buildWebmanifest(contents: string) {
-	const manifest: WebAppManifest = JSON.parse(contents);
+async function composeForFS(
+	initialOptions: BuildOptions,
+	originalPath: string,
+) {
+	const idx = findEndOfLongestPrefix(
+		initialOptions.outdir,
+		originalPath,
+	);
+	const outSeg = originalPath.slice(
+		idx + 1 + originalPath
+		.slice(idx)
+		.indexOf(path.sep)
+	);
+
+	const originalOutputPath = path.join(
+		initialOptions.outdir!,
+		outSeg.replace('.ts', '.js'),
+	);
+
+	const rawContents = await readFile(originalOutputPath, 'utf8');
+
+	if (!rawContents) throw new Error(`File is empty "${originalOutputPath}".`);
+
+	const json = await compileJSON(rawContents, initialOptions);
+
+	await writeFile(
+		originalOutputPath,
+		json,
+	);
+
+	const finalOutputPath = composeFinalOutputPath(originalOutputPath);
+	await rename(
+		originalOutputPath,
+		finalOutputPath,
+	);
+
+	return {
+		finalOutputPath,
+		originalOutputPath,
+	};
 }
 
-// const cache: {
-// 	manifest: {
-// 		changed: number,
-// 		contents: object,
-// 	},
-// 	icons: { [key: string]: number },
-// } = {
-// 	manifest: {
-// 		contents: {},
-// 		changed: 0,
-// 	},
-// 	icons: {},
-// };
-// async function getManifestContents(filepath: string) {
-// 	let hasAnythingChanged = false;
+async function composeForStream(
+	initialOptions: BuildOptions,
+	outputFiles: BuildResult['outputFiles'],
+	{
+		filename,
+		originalOutputFilename,
+	}: {
+		filename: string,
+		originalOutputFilename: string,
+	},
+) {
+	const entry = outputFiles!.find((item) => item.path.endsWith(originalOutputFilename));
+	if (!entry) {
+		const msg = [`No entry found for ${originalOutputFilename}.`];
+		if (filename === defaultFilename) {
+			msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+		}
+		throw new Error(msg.join(' '));
+	}
 
-// 	const { mtimeMs: manifestChanged } = await stat(filepath);
-// 	let manifest = cache.manifest.contents;
-// 	if (manifestChanged > cache.manifest.changed) {
-// 		hasAnythingChanged = true;
-// 		cache.manifest.contents = manifest = JSON.parse(await readFile(filepath, 'utf8'));
-// 		cache.manifest.changed = manifestChanged;
-// 	}
+	const contents = await compileJSON(entry.text, initialOptions);
+	entry.contents = encodeUTF8(contents);
 
-// 	const icons = [];
-// 	for (const iconFSPath of await readdir(path.join(path.dirname(filepath), 'icons'))) {
-// 		icons.push(iconFSPath);
+	const finalOutputPath = composeFinalOutputPath(entry.path);
+	const originalOutputPath = entry.path;
 
-// 		const { mtimeMs: iconChanged } = await stat(iconFSPath);
+	entry.path = finalOutputPath;
 
-// 		if (iconChanged > (cache.icons[iconFSPath] ?? 0)) {
-// 			cache.icons[iconFSPath] = iconChanged;
-// 		}
-// 	}
+	return {
+		finalOutputPath,
+		originalOutputPath,
+	};
+}
 
-// 	if (hasAnythingChanged) return {
-// 		icons,
-// 		manifest,
-// 	};
+const composeFinalOutputPath = (outputPath: string) => path.join(
+	path.dirname(outputPath),
+	'app.webmanifest',
+);
 
-// 	return;
-// }
+const compileJSON = (contents: string, initialOptions: BuildOptions) => import(`data:text/javascript;charset=utf-8,${encodeURIComponent(contents)}`)
+	.then((m) => JSON.stringify(m.default, null, initialOptions.minify ? 0 : 2))
+	.catch((err) => {
+		if (
+			err.message.includes(ERR_REL_IMPORT)
+			&& initialOptions.splitting
+		) console.error(
+			'A bug in esbuild causes a CJS ↔︎ ESM interop polyfill to be injected into all ES modules,',
+			'regardless of whether they need it. If your file does not contain unreplaced imports',
+			'(image imports are replaced), but you are seeing this error,',
+			'that esbuild bug is likely the cause. See https://github.com/evanw/esbuild/issues/4321',
+		);
 
-// async function getManifestIcons(manifestLocation: string) {
-// 	return ().filter((filename) => filename.endsWith('.png'));
-// }
+		throw err;
+	});
+
+const ERR_REL_IMPORT = 'Invalid relative URL or base scheme is not hierarchical';
+
+function findEndOfLongestPrefix(a: string = '', b: string = '') {
+	let i = 0;
+	while (a[i] === b[i]) i++;
+
+	return i;
+}
