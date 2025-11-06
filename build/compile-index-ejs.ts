@@ -11,6 +11,7 @@ import {
 } from 'esbuild';
 
 import { composeBuildMetadata } from './build-metadata.ts';
+import { findEntrypoint } from './find-entrypoint.ts';
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
@@ -33,22 +34,7 @@ export const compileIndexEJSPlugin = (
 		const buildConfig = initialOptions;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const { entryPoints } = initialOptions;
-
-		if (!entryPoints) throw new Error('BuildOptions.entryPoints is required');
-
-		let templatePath = '';
-
-		for ( const item of
-			Array.isArray(entryPoints) ? entryPoints : Object.values(entryPoints)
-		) {
-			const input = typeof item === 'string' ? item : item.in;
-
-			if (input.endsWith(filename)) {
-				templatePath = input;
-				break;
-			}
-		};
+		const templatePath = findEntrypoint(initialOptions, filename);
 
 		if (!templatePath) {
 			const msg = [`No entry-point found for EJS template "${defaultFilename}".`];
@@ -70,7 +56,21 @@ export const compileIndexEJSPlugin = (
 				hot,
 			});
 
-			if (initialOptions.write !== false) {
+			if (initialOptions.write === false) {
+				const entry = outputFiles!.find((item) => item.path.endsWith(filename));
+
+				if (!entry) {
+					const msg = [`No entry found for "${templatePath}".`];
+					if (filename === defaultFilename) {
+						msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
+					}
+					throw new Error(msg.join(' '));
+				}
+
+				// convertOutputFiles
+				entry.contents = encodeUTF8(compiledHTML);
+				entry.path = entry.path.replace('.ejs', '.html');
+			} else {
 				const ogOutname = path.join(buildConfig.outdir!, filename);
 				await writeFile(
 					ogOutname,
@@ -80,22 +80,6 @@ export const compileIndexEJSPlugin = (
 					ogOutname,
 					path.join(buildConfig.outdir!, 'index.html'),
 				);
-			} else {
-				const entry = outputFiles!.find((item) => item.path.endsWith(filename));
-
-				if (!entry) {
-					const msg = [`No entry found for "${templatePath}".`];
-					if (filename === defaultFilename) {
-						msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
-					}
-					throw new Error(msg.join(' '));
-				}
-
-				// convertOutputFiles
-				entry.contents = encodeUTF8(compiledHTML);
-				entry.path = entry.path.replace('.ejs', '.html');
-
-				console.log('entry.hash:', entry.hash);
 			}
 		});
 	},
