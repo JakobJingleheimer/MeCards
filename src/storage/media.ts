@@ -2,6 +2,16 @@ export const media = {
 	composeUrl(filename: string, type: MediaType) {
 		return `/${MEDIA_TYPE_TO_COLLECTION[type]}/${filename}`;
 	},
+	async find(filename: File['name'], type: MediaType) {
+		const key = type
+			? media.composeUrl(filename, type)
+			: filename;
+
+		return caches
+			.open(CACHE_NAME) // Should this be kept open?
+			.then((cache) => cache.match(key))
+			.then((rsp) => rsp ? key : undefined);
+	},
 	async save(file: File, type: MediaType) {
 		return caches
 			.open(CACHE_NAME) // Should this be kept open?
