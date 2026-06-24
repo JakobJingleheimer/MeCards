@@ -38,6 +38,8 @@ textarea {
 }
 
 textarea {
+	--height: 3ch;
+
 	resize: none;
 }
 
