@@ -4,17 +4,24 @@ export const media = {
 	},
 	async save(file: File, type: MediaType) {
 		return caches
-			.open('v1')
-			.then((cache) => cache.put(
-				media.composeUrl(file.name, type),
-				new Response(file, {
-					headers: {
-						'Content-Type': file.type,
-					},
-				}),
-			));
+			.open(CACHE_NAME) // Should this be kept open?
+			.then(async (cache) => {
+				const key = media.composeUrl(file.name, type);
+
+				await cache.put(
+					key,
+					new Response(file, {
+						headers: {
+							'Content-Type': file.type,
+						},
+					}),
+				);
+				return key;
+		});
 	}
 };
+
+const CACHE_NAME = 'v1';
 
 const MEDIA_TYPE_TO_COLLECTION = {
 	card: 'cards',
