@@ -51,8 +51,11 @@ body > footer {
 	box-shadow: 0 calc(-1 * var(--size-5xs)) var(--size-5xs) var(--color-gray-90);
 }
 
-svg[class*=size-] {
-	width: var(--font-size);
+img,
+svg {
+	&[class*=size-] {
+		width: var(--font-size);
+	}
 }
 
 .CardListIcon {
