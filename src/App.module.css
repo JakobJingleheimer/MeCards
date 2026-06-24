@@ -27,7 +27,7 @@ input::placeholder,
 select::placeholder,
 textarea::placeholder
 {
-	color: var(--color-blue-95);
+	color: var(--color-blue-90);
 }
 
 main {

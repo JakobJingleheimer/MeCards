@@ -4,15 +4,17 @@ import { useLocation, useRoute } from 'preact-iso';
 import { useEffect, useState } from 'preact/hooks';
 
 import { generateBarcode } from './generate-barcode.ts';
-import { data } from './storage/data.ts';
+import { data, type CardData } from './storage/data.ts';
 import { media } from './storage/media.ts';
 
 const ENDPOINT = '';
 const FORM_ID = 'upsert';
+const ID_NEW = 'new';
 
 function CardEdit() {
 	let id = useRoute().params.id!;
 	const [logo, setLogo] = useState<URL['href']>();
+	const [card, setCard] = useState(id === ID_NEW ? {} as CardData : data.get(id));
 	const { path, route } = useLocation();
 
 	const lookupMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({ currentTarget }) => {
@@ -20,34 +22,34 @@ function CardEdit() {
 	};
 
 	useEffect(() => {
-		if (id === 'new') return;
+		if (id === ID_NEW) return;
 
 		caches.match(id);
 	}, []);
 
 	const onSubmit: SubmitEventHandler<HTMLFormElement & { elements: {
+		barcode: HTMLInputElement,
 		label: HTMLInputElement,
-		number: HTMLInputElement,
 		notes: HTMLInputElement,
 	} }> = async (event) => {
 		event.preventDefault();
 
 		const {
+			barcode: { value: barcode },
 			label: { value: label },
-			number: { value: number },
 			notes: { value: notes },
 		} = event.currentTarget.elements;
 
 		if (id === 'new') id = nanoid(6);
 
 		data.set(id, {
+			barcode,
 			label,
-			number,
 			notes,
 		});
 
 		await media.save(
-			generateBarcode(number, id),
+			generateBarcode(barcode, id),
 			'card',
 		);
 
@@ -67,6 +69,7 @@ function CardEdit() {
 				<label>
 					Merchant
 					<input
+						defaultValue={card.label}
 						id="label"
 						onBlur={lookupMerchantLogo}
 						placeholder="Costco"
@@ -77,7 +80,8 @@ function CardEdit() {
 				<label>
 					Card number
 					<input
-						id="number"
+						defaultValue={card.barcode}
+						id="barcode"
 						placeholder="4 003994 155486"
 						required
 						type="text"
@@ -86,6 +90,7 @@ function CardEdit() {
 				<label>
 					Notes
 					<textarea
+						defaultValue={card.notes}
 						id="notes"
 						placeholder="Whatever you want"
 					/>
