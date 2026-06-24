@@ -1,5 +1,9 @@
 import { nanoid } from 'nanoid/non-secure';
-import type { FocusEventHandler, SubmitEventHandler } from 'preact';
+import type {
+	FocusEventHandler,
+	InputHTMLAttributes,
+	SubmitEventHandler,
+} from 'preact';
 import { useLocation, useRoute } from 'preact-iso';
 import { useEffect, useState } from 'preact/hooks';
 
@@ -11,7 +15,7 @@ const ENDPOINT = '';
 const FORM_ID = 'upsert';
 const ID_NEW = 'new';
 
-function CardEdit() {
+export default function CardEdit() {
 	let id = useRoute().params.id!;
 	const [logo, setLogo] = useState<URL['href']>();
 	const [card, setCard] = useState(
@@ -39,10 +43,10 @@ function CardEdit() {
 		event.preventDefault();
 
 		const {
-			barcode: { value: barcode },
 			label: { value: label },
 			notes: { value: notes },
 		} = event.currentTarget.elements;
+		const barcode = event.currentTarget.elements.barcode.value.replaceAll(/\s+/g, '');
 
 		if (id === 'new') id = nanoid(6);
 
@@ -109,5 +113,3 @@ function CardEdit() {
 		</main>
 	);
 }
-
-export default CardEdit;
