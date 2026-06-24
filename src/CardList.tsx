@@ -7,7 +7,14 @@ export default function CardList() {
 	return (
 		<main className="container margin-end-space margin-start-space">
 			<section className="grid-auto fill padding-m">
-				{cards.map(([id, data]) => (<Card id={id} {...data} />))}
+				{cards
+					.sort(({ 1: a }, { 1: b }) => {
+						if (a.label < b.label) return -1;
+						if (a.label > b.label) return 1;
+						return 0;
+					})
+					.map(([id, data]) => (<Card id={id} {...data} />))
+				}
 			</section>
 		</main>
 	)
