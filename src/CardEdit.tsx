@@ -9,30 +9,41 @@ import { useEffect, useState } from 'preact/hooks';
 import { generateBarcode } from './generate-barcode.ts';
 import { data, type CardData } from './storage/data.ts';
 import { media } from './storage/media.ts';
+import { composeMerchantSlug, retrieveMerchantLogo } from './merchant-info.ts';
 
-const ENDPOINT = '';
 const FORM_ID = 'upsert';
 const ID_NEW = 'new';
 
 export default function CardEdit() {
 	let id = useRoute().params.id!;
-	const [logo, setLogo] = useState<URL['href']>();
-	const [card, setCard] = useState(
+	const [card] = useState(
 		id === ID_NEW
 		? {} as CardData
 		: data.get(id) ?? {} as CardData
 	);
+	const [logo, setLogo] = useState<URL['href']>();
 	const { route } = useLocation();
 
-	const lookupMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({ currentTarget }) => {
-		// const result = await fetch(ENDPOINT);
+	const getMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({
+		currentTarget: { value: merchantName },
+	}) => {
+		if (!merchantName) return;
+
+		const url = await retrieveMerchantLogo(merchantName);
+
+		setLogo(url);
 	};
 
 	useEffect(() => {
-		if (id === ID_NEW) return;
+		if (!card.label) return;
 
-		caches.match(id);
-	}, []);
+		const merchantSlug = composeMerchantSlug(card.label);
+		const filename = `${merchantSlug}.svg`;
+
+		media
+			.find(filename, 'logo')
+			.then((key) => key && setLogo(key));
+	}, [card.label]);
 
 	const onSubmit: SubmitEventHandler<HTMLFormElement & { elements: {
 		barcode: HTMLInputElement,
@@ -65,22 +76,25 @@ export default function CardEdit() {
 
 	return (
 		<main className="padding-m">
-			{/* camera scanner */}
 			<form
-				className="container stack"
+				className="align-center container stack"
 				id={FORM_ID}
 				onSubmit={onSubmit}
 			>
-				<img src={logo} />
+				<img className="size-5xl" src={logo} />
 
-				<img alt={card.barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
+				<img
+					alt={card.barcode}
+					className="container"
+					src={id === ID_NEW ? '' : media.composeUrl(`${id}.svg`, 'card')}
+				/>
 
 				<label>
 					Merchant
 					<input
 						defaultValue={card.label}
 						id="label"
-						onBlur={lookupMerchantLogo}
+						onBlur={getMerchantLogo}
 						placeholder="Costco"
 						required
 						type="text"
