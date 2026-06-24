@@ -14,7 +14,11 @@ const ID_NEW = 'new';
 function CardEdit() {
 	let id = useRoute().params.id!;
 	const [logo, setLogo] = useState<URL['href']>();
-	const [card, setCard] = useState(id === ID_NEW ? {} as CardData : data.get(id));
+	const [card, setCard] = useState(
+		id === ID_NEW
+		? {} as CardData
+		: data.get(id) ?? {} as CardData
+	);
 	const { path, route } = useLocation();
 
 	const lookupMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({ currentTarget }) => {
