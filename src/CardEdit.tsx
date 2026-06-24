@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 import type {
 	FocusEventHandler,
-	InputHTMLAttributes,
 	SubmitEventHandler,
 } from 'preact';
 import { useLocation, useRoute } from 'preact-iso';
@@ -23,7 +22,7 @@ export default function CardEdit() {
 		? {} as CardData
 		: data.get(id) ?? {} as CardData
 	);
-	const { path, route } = useLocation();
+	const { route } = useLocation();
 
 	const lookupMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({ currentTarget }) => {
 		// const result = await fetch(ENDPOINT);
@@ -73,6 +72,8 @@ export default function CardEdit() {
 				onSubmit={onSubmit}
 			>
 				<img src={logo} />
+
+				<img alt={card.barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
 
 				<label>
 					Merchant
