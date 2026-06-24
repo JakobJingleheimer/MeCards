@@ -11,6 +11,7 @@ export const outdir = fileURLToPath(import.meta.resolve('../dist'));
 export const config: BuildOptions = {
 	bundle: true,
 	entryPoints: [
+		fileURLToPath(import.meta.resolve('../src/favicon.ico')),
 		fileURLToPath(import.meta.resolve('../src/main.tsx')),
 		fileURLToPath(import.meta.resolve('../src/index.ejs')),
 		fileURLToPath(import.meta.resolve('../src/webmanifest/webmanifest.ts')),
