@@ -1,19 +1,23 @@
-import { data } from './storage/data.ts';
+import { data, type CardData, type CardId } from './storage/data.ts';
 import { media } from './storage/media.ts';
 
-function CardList() {
+export default function CardList() {
 	const cards = Array.from(data.getAll());
 
 	return (
-		<main className="container">
-			{cards.map(([id, { barcode, label }]) => (
-				<figure>
-					<img alt={barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
-					<figcaption>{label}</figcaption>
-				</figure>
-			))}
+		<main className="container margin-end-space margin-start-space">
+			<section className="grid-auto fill padding-m">
+				{cards.map(([id, data]) => (<Card id={id} {...data} />))}
+			</section>
 		</main>
 	)
 }
 
-export default CardList;
+const Card = ({ barcode, label, id }: CardData & { id: CardId }) => (
+	<a href={`/edit/${id}`}>
+		<figure className="direction-column flex">
+				<img alt={barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
+			<figcaption>{label}</figcaption>
+		</figure>
+	</a>
+);
