@@ -19,15 +19,26 @@ body {
 	height: 100%;
 }
 
-input, textarea, select {
-	background-color: var(--color-blue-base);
-	color: var(--color-background);
+input,
+select,
+textarea {
+	&:focus,
+	&:hover {
+		background-color: var(--color-blue-base);
+		color: var(--color-background);
+
+		&::placeholder {
+			color: var(--color-blue-90);
+		}
+	}
+
+	&:not(:focus) {
+		border-color: transparent;
+	}
 }
-input::placeholder,
-select::placeholder,
-textarea::placeholder
-{
-	color: var(--color-blue-90);
+
+textarea {
+	resize: none;
 }
 
 main {

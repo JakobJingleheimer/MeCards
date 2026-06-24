@@ -27,7 +27,7 @@ export function App() {
 						<Route path="/install" component={Install} />
 						<Route path="/no-storage" component={NoStorage} />
 						<Route path="/" component={CardList} />
-						<Route path="/edit/:id" component={CardEdit} />
+						<Route path="/card/:id" component={CardEdit} />
 					</Router>
 				</CheckPrerequisites>
 
@@ -35,7 +35,7 @@ export function App() {
 					<a className="flex-inline" href="/">
 						<Menu className="size-2xl" />
 					</a>
-					<a className="flex-inline" href="/edit/new">
+					<a className="flex-inline" href="/card/new">
 						<BarcodeScanner className="size-2xl" />
 					</a>
 				</footer>

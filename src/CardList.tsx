@@ -21,7 +21,7 @@ export default function CardList() {
 }
 
 const Card = ({ barcode, label, id }: CardData & { id: CardId }) => (
-	<a href={`/edit/${id}`}>
+	<a href={`/card/${id}`}>
 		<figure className="direction-column flex">
 				<img alt={barcode} src={media.composeUrl(`${id}.svg`, 'card')} />
 			<figcaption>{label}</figcaption>
