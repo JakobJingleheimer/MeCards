@@ -26,7 +26,7 @@ const iOSInstructions = () => (
 		<li><ShareMenuIcon className="size-m" /> Open the share menu</li>
 		<li><AddBoxedIcon className="size-m" /> Tap <em>Add to Home Screen</em></li>
 		<li><MobileHomeScreenIcon className="size-m" /> Go to your phone’s home screen</li>
-		<li>Tap MeCards’ icon to launch MeCards as an app</li>
+		<li>Tap MeCards icon to launch MeCards as an app</li>
 	</ol>
 );
 

@@ -1,5 +1,3 @@
-import { clsx } from 'clsx';
-
 import { composeMerchantSlug } from './merchant-info.ts';
 import { data, type CardData, type CardId } from './storage/data.ts';
 import { media } from './storage/media.ts';
