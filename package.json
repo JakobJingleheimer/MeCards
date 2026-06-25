@@ -27,7 +27,7 @@
     "dev": "NODE_ENV=development rm -rf ./dist && node ./build/dev.ts",
     "start": "node --run build && node --run serve",
     "start:prod": "node --run build:prod && node --run serve",
-    "serve": "http-server ./dist",
+    "serve": "http-server -S -C ./cert.pem -K key.pem ./dist",
     "test": "node --test",
     "types:check": "tsgo --noEmit ./src/**/*"
   },
