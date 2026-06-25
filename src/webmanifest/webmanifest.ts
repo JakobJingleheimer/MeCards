@@ -3,10 +3,10 @@ import type { WebAppManifest } from 'web-app-manifest';
 import icon192 from './icons/192.png';
 import icon512 from './icons/512.png';
 
-import screenDesktopEdit from './screenshots/edit-screen_desktop_2026-06-24.png';
-import screenMobileEdit from './screenshots/edit-screen_mobile_2026-06-24.png';
-import screenDesktopList from './screenshots/list-screen_desktop_2026-06-24.png';
-import screenMobileList from './screenshots/list-screen_mobile_2026-06-24.png';
+import screenDesktopEdit from './screenshots/screen-edit-desktop.png';
+import screenMobileEdit from './screenshots/screen-edit-mobile.png';
+import screenDesktopList from './screenshots/screen-list-desktop.png';
+import screenMobileList from './screenshots/screen-list-mobile.png';
 
 export default {
 	name: 'MeCards',
