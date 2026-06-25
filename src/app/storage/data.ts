@@ -1,4 +1,7 @@
 export const data = {
+	delete(key: CardId) {
+		localStorage.removeItem(key);
+	},
 	get(key: CardId) {
 		const val = localStorage.getItem(key);
 		return val == null

@@ -45,6 +45,7 @@
     "@testing-library/preact": "^3.2.4",
     "@types/ejs": "^3.1.5",
     "@types/node": "^24.7.0",
+    "@types/serviceworker": "^0.0.197",
     "@types/web-app-manifest": "^1.0.9",
     "@typescript/native-preview": "^7.0.0-dev.20251007.1",
     "ejs": "^3.1.10",

@@ -4,7 +4,11 @@ import { config } from "./config.ts";
 
 const { errors } = await build({
 	...config,
-	entryNames: '[dir]/[name]-[hash]',
+	bundle: true,
+	// entryNames: '[dir]/[name]-[hash]',
+	entryNames: '[dir]/[name]',
+	// assetNames: '[dir]/[name]-[hash]',
+	assetNames: '[dir]/[name]',
 	minify: true,
 });
 

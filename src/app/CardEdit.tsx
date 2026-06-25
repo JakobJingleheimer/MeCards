@@ -16,8 +16,9 @@ const ID_NEW = 'new';
 
 export default function CardEdit() {
 	let id = useRoute().params.id!;
+	const isNew = id === ID_NEW;
 	const [card] = useState(
-		id === ID_NEW
+		isNew
 		? {} as CardData
 		: data.get(id) ?? {} as CardData
 	);
@@ -86,7 +87,7 @@ export default function CardEdit() {
 				<img
 					alt={card.barcode}
 					className="container"
-					src={id === ID_NEW ? '' : media.composeUrl(`${id}.svg`, 'card')}
+					src={isNew ? '' : media.composeUrl(`${id}.svg`, 'card')}
 				/>
 
 				<label>
@@ -120,7 +121,10 @@ export default function CardEdit() {
 				</label>
 
 				<div className="split">
-					<button type="reset">Reset</button>
+					{isNew
+						? <button type="reset">Reset</button>
+						: <button className="danger" onClick={() => data.delete(id)} type="button">Delete</button>
+					}
 
 					<button className="primary" type="submit">Save</button>
 				</div>

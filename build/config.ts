@@ -5,15 +5,16 @@ import svgr from 'esbuild-plugin-svgr';
 
 import { compileIndexEJSPlugin } from './compile-index-ejs.ts';
 import { compileWebmanifestPlugin } from './compile-webmanifest.ts';
+import { compileServiceWorkerPlugin } from './compile-serviceworker.ts';
 
 export const outdir = fileURLToPath(import.meta.resolve('../dist'));
 
 export const config: BuildOptions = {
 	bundle: true,
 	entryPoints: [
-		fileURLToPath(import.meta.resolve('../src/favicon.ico')),
-		fileURLToPath(import.meta.resolve('../src/main.tsx')),
-		fileURLToPath(import.meta.resolve('../src/index.ejs')),
+		fileURLToPath(import.meta.resolve('../src/app/favicon.ico')),
+		fileURLToPath(import.meta.resolve('../src/app/main.tsx')),
+		fileURLToPath(import.meta.resolve('../src/app/index.ejs')),
 		fileURLToPath(import.meta.resolve('../src/webmanifest/webmanifest.ts')),
 		fileURLToPath(import.meta.resolve('../src/service-worker.ts')),
 	],
@@ -31,6 +32,7 @@ export const config: BuildOptions = {
 		svgr(),
 		compileWebmanifestPlugin(),
 		compileIndexEJSPlugin(),
+		compileServiceWorkerPlugin(),
 	],
 	outdir,
 	splitting: false, // https://github.com/evanw/esbuild/issues/4321

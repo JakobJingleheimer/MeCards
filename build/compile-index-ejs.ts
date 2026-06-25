@@ -81,6 +81,10 @@ export const compileIndexEJSPlugin = (
 					path.join(buildConfig.outdir!, 'index.html'),
 				);
 			}
+
+			// @ts-expect-error
+			metafile.outputs['dist/index.html'] = metafile?.outputs[`dist/${filename}`];
+			delete metafile?.outputs[`dist/${filename}`];
 		});
 	},
 });
