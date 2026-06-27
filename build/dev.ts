@@ -13,7 +13,12 @@ const serveOpts: ServeOptions = {
 	servedir: outdir,
 };
 
-const ctx = await context({ ...config, logLevel: 'info' });
+const ctx = await context({
+	...config,
+	entryNames: '[dir]/[name]',
+	assetNames: '[dir]/[name]',
+	logLevel: 'info',
+});
 
 await ctx.watch();
 
