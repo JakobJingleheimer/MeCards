@@ -18,6 +18,7 @@ const ctx = await context({
 	entryNames: '[dir]/[name]',
 	assetNames: '[dir]/[name]',
 	logLevel: 'info',
+	sourcemap: 'inline',
 });
 
 await ctx.watch();
