@@ -7,22 +7,15 @@ export async function retrieveMerchantLogo(merchantName: string) {
 
 	const entityId = await fetch(`${ENTITIES_SEARCH_ENDPOINT}${encodeURIComponent(merchantName)}`)
 		.then(checkRspJson)
-		.then(({ results: [entity] }: WikimediaEntitiesSearchResult) => entity?.id);
+		.then(({ results }: WikimediaEntitiesSearchResult) => {
+			for (const entity of results) if (entity.match.type === 'label') return entity.id;
+		});
 
 	if (!entityId) throw new Error('Merchant not found');
 
 	const blob = await fetch(`${ENTITY_META_ENDPOINT}${entityId}.json`)
 		.then(checkRspJson)
-		.then((entity: WikimediaEntityResult) => {
-			const resources = entity.entities[entityId]!.claims;
-			const rId = 'P154' in resources
-				? 'P154'
-				: 'P18' in resources
-				? 'P18'
-				: '';
-
-			if (rId) return resources[rId]?.at(-1)?.mainsnak.datavalue.value;
-		})
+		.then((entity: WikimediaEntityResult) => entity.entities[entityId]!.claims.P154?.at(-1)?.mainsnak.datavalue.value)
 		.then((filename) => {
 			if (filename) return filename;
 			throw new Error(`${merchantName} has no logo`);
@@ -44,7 +37,7 @@ export async function retrieveMerchantLogo(merchantName: string) {
 	return url;
 };
 
-const ENTITIES_SEARCH_ENDPOINT = 'https://www.wikidata.org/w/rest.php/wikibase/v1/search/items?language=en&limit=1&q=';
+const ENTITIES_SEARCH_ENDPOINT = 'https://www.wikidata.org/w/rest.php/wikibase/v1/search/items?language=en&limit=10&q=';
 const ENTITY_META_ENDPOINT = 'https://www.wikidata.org/wiki/Special:EntityData/'
 const MEDIA_ENDPOINT = 'https://api.wikimedia.org/core/v1/commons/file/File:';
 
@@ -70,7 +63,7 @@ type WikimediaEntitiesSearchResult = {
 			value: string,
 		},
 		match: {
-			type: 'label',
+			type: 'alias' | 'label',
 			language: 'en',
 			text: string
 		}
