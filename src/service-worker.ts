@@ -14,11 +14,11 @@ self.addEventListener('install', (event) => {
 // PWA setup 2
 self.addEventListener('activate', (event) => event.waitUntil(clients.claim()));
 
-// const cacheFirst = (req) => caches
-// 	.match(req)
-// 	.then((rsp) => rsp || fetch(req));
+const cacheFirst = (req) => caches
+	.match(req)
+	.then((rsp) => rsp || fetch(req));
 
-const cacheOnly = (req) => caches.match(req);
+// const cacheOnly = (req) => caches.match(req);
 
 const networkFirst = (req) => fetch(req)
 	.then(
@@ -34,8 +34,8 @@ const networkFirst = (req) => fetch(req)
 const networkOnly = (req) => fetch(req);
 
 const handlers = {
-	// 'cache-first': cacheFirst,
-	'cache-only': cacheOnly,
+	'cache-first': cacheFirst,
+	// 'cache-only': cacheOnly,
 	'network-first': networkFirst,
 	'network-only': networkOnly,
 };
@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
 		? 'network-only' // req to external host
 		: url.pathname.startsWith('/app/')
 		? 'network-first' // app file
-		: 'cache-only'; // card asset
+		: 'cache-first'; // card asset
 
 	const handler = handlers[strategy];
 
