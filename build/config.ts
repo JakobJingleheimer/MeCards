@@ -13,10 +13,11 @@ export const config: BuildOptions = {
 	bundle: true,
 	entryPoints: [
 		fileURLToPath(import.meta.resolve('../src/app/favicon.ico')),
+		fileURLToPath(import.meta.resolve('../src/sw.ts')),
+		fileURLToPath(import.meta.resolve('../src/sw-register.ts')),
 		fileURLToPath(import.meta.resolve('../src/app/main.tsx')),
-		fileURLToPath(import.meta.resolve('../src/app/index.ejs')),
 		fileURLToPath(import.meta.resolve('../src/webmanifest/webmanifest.ts')),
-		fileURLToPath(import.meta.resolve('../src/service-worker.ts')),
+		fileURLToPath(import.meta.resolve('../src/app/index.ejs')),
 	],
 	format: 'esm',
 	loader: {

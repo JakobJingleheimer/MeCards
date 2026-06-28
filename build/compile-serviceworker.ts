@@ -8,7 +8,7 @@ import {
 	type Plugin,
 } from 'esbuild';
 
-const defaultFilename = 'service-worker.ts';
+const defaultFilename = 'sw.ts';
 export const compileServiceWorkerPlugin = (
 	filename: string = defaultFilename,
 ): Plugin => ({

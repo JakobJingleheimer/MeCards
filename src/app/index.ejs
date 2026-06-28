@@ -11,7 +11,9 @@
 			<link rel="icon" href="<%= assets.favicon %>" />
 		<% } %>
 		<% for (const href of assets.css) { %><link rel="stylesheet" href="<%= href %>" /><% } %>
-		<% for (const { isModule, src } of assets.scripts) { %><script src="<%= src %>" type="module"></script><% } %>
+		<% for (const { isModule, src } of assets.scripts) { %>
+			<script src="<%= src %>" type="module"></script>
+		<% } %>
 
     <title>MeCards</title>
 	</head>
