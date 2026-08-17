@@ -4,9 +4,11 @@ import {
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 
 import ejs from 'ejs';
 import {
+	type OutputFile,
 	type Plugin,
 } from 'esbuild';
 
@@ -17,6 +19,11 @@ export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
 	hot: boolean,
 }>;
+
+const encoder = new TextEncoder();
+const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
+
+const cwd = `${process.cwd()}${path.sep}`;
 
 const defaultFilename = 'index.ejs';
 export const compileIndexEJSPlugin = (
@@ -30,11 +37,11 @@ export const compileIndexEJSPlugin = (
 	},
 ): Plugin => ({
 	name: 'Compile index.ejs',
-	async setup({ initialOptions, onEnd }) {
-		const buildConfig = initialOptions;
+	async setup({ initialOptions: buildConfig, onEnd }) {
+		buildConfig.metafile ||= true;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const templatePath = findEntrypoint(initialOptions, filename);
+		const templatePath = findEntrypoint(buildConfig, filename);
 
 		if (!templatePath) {
 			const msg = [`No entry-point found for EJS template "${defaultFilename}".`];
@@ -42,9 +49,6 @@ export const compileIndexEJSPlugin = (
 
 			throw new Error(msg.join(' '));
 		}
-
-		const encoder = new TextEncoder();
-		const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
 
 		onEnd(async ({ outputFiles, metafile }) => {
 			const tmpl = await readFile(templatePath, 'utf8');
@@ -56,36 +60,70 @@ export const compileIndexEJSPlugin = (
 				hot,
 			});
 
-			if (initialOptions.write === false) {
-				const entry = outputFiles!.find((item) => item.path.endsWith(filename));
+			const handler = buildConfig.write === false ? handleFileOnDisk : handleFileInMemory;
 
-				if (!entry) {
-					const msg = [`No entry found for "${templatePath}".`];
-					if (filename === defaultFilename) {
-						msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
-					}
-					throw new Error(msg.join(' '));
-				}
+			await handler(
+				compiledHTML,
+				buildConfig.outdir!,
+				filename,
+				outputFiles!,
+			);
 
-				// convertOutputFiles
-				entry.contents = encodeUTF8(compiledHTML);
-				entry.path = entry.path.replace('.ejs', '.html');
-			} else {
-				const ogOutname = path.join(buildConfig.outdir!, filename);
-				await writeFile(
-					ogOutname,
-					compiledHTML,
-				);
-				await rename(
-					ogOutname,
-					path.join(buildConfig.outdir!, 'index.html'),
-				);
-			}
+			const inPrefix = path.join(
+				...templatePath
+					.replace(cwd, '')
+					.replace(filename, '')
+					.split(path.sep)
+					.slice(1) // This assumes source code lives (directly) in a dir like `src/`
+			);
+			const outPrefix = buildConfig.outdir?.replace(cwd, '')!;
+
+			const templateKey = path.join(outPrefix, inPrefix, filename);
+			const replacementKey = path.join(outPrefix, 'index.html');
 
 			// @ts-expect-error
-			metafile.outputs['dist/index.html'] = metafile?.outputs[`dist/${filename}`];
-			delete metafile?.outputs[`dist/${filename}`];
+			metafile.outputs[replacementKey] = metafile?.outputs[templateKey];
+
+			delete metafile?.outputs[templateKey];
 		});
 	},
 });
 
+async function handleFileInMemory(
+	compiledHTML: string,
+	outdir: string,
+	ogFilename: string,
+) {
+	const ogOutpath = path.join(outdir!, ogFilename);
+	await writeFile(
+		ogOutpath,
+		compiledHTML,
+	);
+	await rename(
+		ogOutpath,
+		makeFinalOutpath(outdir!),
+	);
+}
+
+function handleFileOnDisk(
+	compiledHTML: string,
+	outdir: string,
+	ogFilename: string,
+	outputFiles: OutputFile[],
+) {
+	const entry = outputFiles!.find((item) => item.path.endsWith(ogFilename));
+
+	if (!entry) {
+		const msg = [`No entry found for "${ogFilename}".`];
+		if (ogFilename === defaultFilename) {
+			msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
+		}
+		throw new Error(msg.join(' '));
+	}
+
+	// convertOutputFiles
+	entry.contents = encodeUTF8(compiledHTML);
+	entry.path = makeFinalOutpath(outdir);
+}
+
+const makeFinalOutpath = (outdir: string) => path.join(outdir, 'index.html');

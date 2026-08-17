@@ -43,10 +43,9 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
   },
-  "include": [
-    "./build/**/*",
-    "./src/**/*.ts",
-    "./src/**/*.d.ts",
-    "./src/**/*.tsx",
-  ],
+  "include": [],
+  "references": [
+    { "path": "./build" },
+    { "path": "./src/app" },
+  ]
 }

@@ -10,6 +10,7 @@ const { errors } = await build({
 	// assetNames: '[dir]/[name]-[hash]',
 	assetNames: '[dir]/[name]',
 	minify: true,
+	write: true,
 });
 
 if (errors.length) throw new AggregateError(errors);

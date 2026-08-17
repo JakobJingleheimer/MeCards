@@ -20,7 +20,5 @@ export function composeBuildMetadata(metafile: Metafile, buildConfig: BuildOptio
 		}
 	}
 
-	console.log('assets:\n', assets)
-
 	return assets;
 }

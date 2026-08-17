@@ -24,12 +24,12 @@
   "scripts": {
     "build": "rm -rf ./dist && node ./build/prod.ts",
     "build:prod": "NODE_ENV=production node --run build",
-    "dev": "NODE_ENV=development rm -rf ./dist && node ./build/dev.ts",
+    "dev": "NODE_ENV=development PORT=8443 rm -rf ./dist && node ./build/dev.ts",
     "start": "node --run build && node --run serve",
     "start:prod": "node --run build:prod && node --run serve",
-    "serve": "http-server -S -C ./cert.pem -K key.pem ./dist",
+    "serve": "PORT=8443 http-server -S -C ./cert.pem -K key.pem ./dist",
     "test": "node --test",
-    "types:check": "tsgo --noEmit ./src/**/*"
+    "types:check": "tsc --build --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -44,13 +44,15 @@
   "devDependencies": {
     "@testing-library/preact": "^3.2.4",
     "@types/ejs": "^3.1.5",
-    "@types/node": "^24.7.0",
-    "@types/serviceworker": "^0.0.197",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^26.2.0",
+    "@types/serviceworker": "^0.0.199",
     "@types/web-app-manifest": "^1.0.9",
-    "@typescript/native-preview": "^7.0.0-dev.20251007.1",
     "ejs": "^3.1.10",
     "esbuild": "^0.25.12",
-    "esbuild-plugin-svgr": "^3.1.1"
+    "esbuild-plugin-svgr": "^3.1.1",
+    "mime-types": "^3.0.2",
+    "typescript": "^7.0.2"
   },
   "optionalDependencies": {
     "http-server": "^14.1.1"

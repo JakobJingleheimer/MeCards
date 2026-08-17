@@ -26,7 +26,6 @@ export const config: BuildOptions = {
 		'.png': 'file',
 		'.woff2': 'file',
 	},
-	metafile: true,
 	jsx: 'automatic',
 	jsxImportSource: 'preact',
 	plugins: [
@@ -37,5 +36,4 @@ export const config: BuildOptions = {
 	],
 	outdir,
 	splitting: false, // https://github.com/evanw/esbuild/issues/4321
-	// write: false,
 } as const;
