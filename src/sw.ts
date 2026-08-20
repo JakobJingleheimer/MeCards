@@ -14,15 +14,13 @@ self.addEventListener('activate', function onSWActivate(event) {
 
 self.addEventListener('fetch', function onFetch(event) {
 	const { request: req } = event;
-	const url = new URL(req.url);
+	const url = isDocReq(req)
+		? new URL('/index.html', self.location.origin)
+		: new URL(req.url);
 
 	const strategy = url.origin !== self.location.origin
 		? 'network-only' // req to external host
-		: (
-			url.pathname.startsWith('/app/')
-			|| req.headers.get('sec-fetch-dest') === 'document'
-			|| req.headers.get('accept')?.startsWith('text/html')
-		)
+		: (url.pathname.startsWith('/app/') || isDocReq(req))
 		? 'network-first' // app file
 		: 'cache-first'; // card asset
 
@@ -37,6 +35,11 @@ self.addEventListener('fetch', function onFetch(event) {
 
 	event.respondWith(handler(req));
 });
+
+const isDocReq = (req: Request) => (
+	req.headers.get('sec-fetch-dest') === 'document'
+	|| req.headers.get('accept')?.startsWith('text/html')
+);
 
 const cacheFirst = (req) => caches
 	.match(req)
