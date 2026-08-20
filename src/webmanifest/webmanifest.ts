@@ -1,7 +1,9 @@
 import type { WebAppManifest } from 'web-app-manifest';
 
-import icon192 from './icons/192.png';
-import icon512 from './icons/512.png';
+import icon192p from './icons/192p.png';
+import icon192m from './icons/192m.png';
+import icon512p from './icons/512p.png';
+import icon512m from './icons/512m.png';
 
 import screenDesktopEdit from './screenshots/screen-edit-desktop.png';
 import screenMobileEdit from './screenshots/screen-edit-mobile.png';
@@ -19,15 +21,27 @@ export default {
 	],
 	icons: [
 		{
+			purpose: 'maskable',
+			sizes: '192x192',
+			src: icon192m,
+			type: 'image/png',
+		},
+		{
 			purpose: 'any',
 			sizes: '192x192',
-			src: icon192,
+			src: icon192p,
+			type: 'image/png',
+		},
+		{
+			purpose: 'maskable',
+			sizes: '512x512',
+			src: icon512m,
 			type: 'image/png',
 		},
 		{
 			purpose: 'any',
 			sizes: '512x512',
-			src: icon512,
+			src: icon512p,
 			type: 'image/png',
 		},
 	],
