@@ -28,10 +28,10 @@ self.addEventListener('fetch', function onFetch(event) {
 
 	const handler = handlers[strategy];
 
-	console.log({
+	console.table({
 		'req.url': req.url,
-		'self': self.location.origin,
-		'cross-origin': url.origin !== self.location.origin,
+		// 'self': self.location.origin,
+		'cors': url.origin !== self.location.origin,
 		strategy,
 	});
 
