@@ -9,17 +9,18 @@ function CheckPrerequisites({ children }: { children: ComponentChild }) {
 	useEffect(() => {
 		if (!window.matchMedia('(display-mode: standalone)').matches) return setPrereq('install');
 
-		if (typeof navigator.storage?.persist !== 'function') return setPrereq('no-storage');
-		navigator.storage.persist().then((persisted) => {
-			if (!persisted) setPrereq('no-storage');
-		});
+		console.warn('⚠️ Persistent Storage check is disabled. Re-enable it.');
+		// if (typeof navigator.storage?.persist !== 'function') return setPrereq('no-storage');
+
+		// navigator.storage.persist().then((persisted) => {
+		// 	if (!persisted) setPrereq('no-storage');
+		// });
 	}, []);
 
-	console.error('⚠️ Prerequisite check is disabled. Re-enable it.')
-	// const prereqPath = `/${prereq}`;
-	// if (prereq) {
-	// 	if (path !== prereqPath) route(prereq);
-	// } else if (path === prereqPath) route('/');
+	const prereqPath = `/${prereq}`;
+	if (prereq) {
+		if (path !== prereqPath) route(prereq);
+	} else if (path === prereqPath) route('/');
 
 	return children;
 }

@@ -5,8 +5,8 @@ import Warning from './icons/warning.svg';
 import styles from './NoStorage.module.css';
 
 const NoStorage = () => (
-	<main className={clsx('container', styles.Page)}>
-		<Warning className={styles.WarnIcon} />
+	<main className={clsx('container', 'text-center', styles.Page)}>
+		<Warning className={clsx(styles.WarnIcon, 'size-6xl')} />
 
 		<h1>Persistent storage is not available</h1>
 
