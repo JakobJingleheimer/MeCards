@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 const CACHE_KEY = 'v1';
 
 declare var __APP_FILES__: string[]; // esbuild replaces this with the array of file-paths
@@ -20,7 +18,11 @@ self.addEventListener('fetch', function onFetch(event) {
 
 	const strategy = url.origin !== self.location.origin
 		? 'network-only' // req to external host
-		: url.pathname.startsWith('/app/')
+		: (
+			url.pathname.startsWith('/app/')
+			|| req.headers.get('sec-fetch-dest') === 'document'
+			|| req.headers.get('accept')?.startsWith('text/html')
+		)
 		? 'network-first' // app file
 		: 'cache-first'; // card asset
 

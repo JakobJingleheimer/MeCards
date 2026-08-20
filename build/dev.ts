@@ -8,6 +8,7 @@ import { context } from 'esbuild';
 import mime from 'mime-types';
 
 import { config, outdir } from './config.ts';
+import { styleText } from 'node:util';
 
 
 const ctx = await context({
@@ -32,7 +33,8 @@ await rebuild();
 
 server.on('stream', async (stream: ServerHttp2Stream, headers) => {
   if (headers[':method'] !== 'GET') {
-    stream.respond({ ':status': 405 })
+		console.error(styleText(['red'], `[Dev Server]: Unsupported method ${headers[':method']}`));
+    stream.respond({ ':status': 405 });
     return stream.end();
   }
 
@@ -41,32 +43,37 @@ server.on('stream', async (stream: ServerHttp2Stream, headers) => {
   try {
     pathname = decodeURIComponent(new URL(headers[':path']!, 'https://localhost').pathname);
   } catch {
-    stream.respond({ ':status': 400 })
+		console.error(styleText(['red'], '[Dev Server]: Could not determine pathname'), headers);
+    stream.respond({ ':status': 400 });
     return stream.end();
   }
 
-  if (headers['sec-fetch-dest'] === 'document') pathname = '/index.html';
+  if (
+		headers['sec-fetch-dest'] === 'document'
+		|| headers['accept']?.startsWith('text/html')
+	) pathname = '/index.html';
+	console.log('[Dev Server]: GET', pathname);
 
   const filePath = path.resolve(outdir, `.${pathname}`);
 
   const contents = files.get(filePath);
 
   if (!contents) {
+		console.error(styleText(['red'], `[Dev Server]: No contents for ${pathname}`));
     stream.respond({
       ':status': 404,
       'content-type': 'text/plain',
     });
-
     return stream.end('Not found');
   }
 
+	console.log('[Dev Server]: Successfully handled', pathname);
   stream.respond({
     ':status': 200,
     'content-type': mime.lookup(filePath) || 'text/plain',
     'content-length': contents.byteLength,
   });
-
-  stream.end(contents);
+  return stream.end(contents);
 });
 
 server.listen({
@@ -81,7 +88,8 @@ server.listen({
 
 watch('src', { recursive: true }, async () => {
   try { await rebuild() }
-	catch (err) { console.error(err) }
+	// @ts-expect-error
+	catch (err) { console.error(styleText(['red'], err.message), err.stack) }
 });
 
 function getAddressInfo(server: Http2SecureServer) {
