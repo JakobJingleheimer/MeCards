@@ -27,7 +27,7 @@ export function App() {
 						<Route path="/install" component={Install} />
 						<Route path="/no-storage" component={NoStorage} />
 						<Route path="/" component={CardList} />
-						<Route path="/card/:id" component={CardEdit} />
+						<Route path="/card/:id" component={({ path }) => <CardEdit key={path} />} />
 					</Router>
 				</CheckPrerequisites>
 
