@@ -8,10 +8,13 @@ import Scan from '@tabler/icons/outline/scan.svg';
 import Wallet from '@tabler/icons/outline/wallet.svg';
 
 export function Footer() {
-	const { path } = useLocation();
+	const { path, query: { search }, route } = useLocation();
 
 	const handleSearch = useMemo(
-		() => debounce(({ target: { value } }: ChangeEvent<HTMLInputElement>) => {}),
+		() => debounce(
+			({ target: { value } }: ChangeEvent<HTMLInputElement>) => route(`/?search=${value}`),
+			300,
+		),
 		[],
 	);
 
@@ -23,6 +26,7 @@ export function Footer() {
 
 					<input
 						className="margin-start-0"
+						defaultValue={search}
 						name="search-cards"
 						onChange={handleSearch}
 						type="search"
