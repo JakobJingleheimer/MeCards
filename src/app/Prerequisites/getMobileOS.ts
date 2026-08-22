@@ -1,3 +1,9 @@
+declare global {
+	interface Window {
+		opera?: Record<string, any>;
+	}
+}
+
 export function getMobileOS(
 	navigator: Navigator,
 	window: Window,
@@ -5,8 +11,6 @@ export function getMobileOS(
 	const userAgent = (
 		navigator.userAgent
 		|| navigator.vendor
-		// @ts-expect-error `opera` is a non-standard prop
-		|| window.opera
 	);
 
 	// Must come before Android check because its UA also contains 'Android'

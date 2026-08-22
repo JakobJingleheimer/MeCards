@@ -1,16 +1,18 @@
 import type { FunctionComponent } from 'preact';
+import { clsx } from 'clsx';
 
-import AddBoxedIcon from './icons/add-boxed.svg';
-import MobileHomeScreenIcon from './icons/mobile-home-screen.svg';
-import ShareMenuIcon from './icons/ios-share.svg';
+import AddBoxedIcon from '@tabler/icons/outline/square-plus.svg';
+import MobileHomeScreenIcon from '@tabler/icons/outline/device-mobile.svg';
+import ShareMenuIcon from '@tabler/icons/outline/share-2.svg';
 
+import styles from './Prerequisites.module.css';
 import { getMobileOS } from './getMobileOS.ts';
 
 const Install = () => {
 	const Instrutions = osToInstructions[getMobileOS(navigator, window)];
 
 	return (
-		<main className="container stack">
+		<main className={clsx('container', 'text-center', styles.Page)}>
 			<h1 className="text-center">Install MeCards to get started</h1>
 			<Instrutions />
 		</main>

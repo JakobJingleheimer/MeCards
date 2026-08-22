@@ -5,18 +5,17 @@ import {
 	Router,
 	Route,
 } from 'preact-iso';
-
 import 'kelpui/css/kelp.css';
 
-import BarcodeScanner from './icons/barcode-scanner.svg';
-import Menu from './icons/menu.svg';
-import styles from './App.module.css';
-import CheckPrerequisites from './CheckPrerequisites.tsx';
+import './App.module.css';
+
+import CheckPrerequisites from './Prerequisites/CheckPrerequisites.tsx';
+import { Footer } from './Footer.tsx';
 
 const CardEdit = lazy(() => import('./CardEdit.tsx'));
 const CardList = lazy(() => import('./CardList.tsx'));
-const Install = lazy(() => import('./Install.tsx'));
-const NoStorage = lazy(() => import('./NoStorage.tsx'));
+const Install = lazy(() => import('./Prerequisites/Install.tsx'));
+const NoStorage = lazy(() => import('./Prerequisites/NoStorage.tsx'));
 
 export function App() {
 	return (
@@ -31,14 +30,7 @@ export function App() {
 					</Router>
 				</CheckPrerequisites>
 
-				<footer className="flex gap-m justify-center padding-4xs" id={styles.head}>
-					<a className="flex-inline" href="/">
-						<Menu className="size-2xl" />
-					</a>
-					<a className="flex-inline" href="/card/new">
-						<BarcodeScanner className="size-2xl" />
-					</a>
-				</footer>
+				<Footer />
 			</ErrorBoundary>
 		</LocationProvider>
 	);

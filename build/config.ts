@@ -29,7 +29,9 @@ export const config: BuildOptions = {
 	jsx: 'automatic',
 	jsxImportSource: 'preact',
 	plugins: [
-		svgr(),
+		svgr({
+			icon: true, // strip `width` & `height` attrs
+		}),
 		compileWebmanifestPlugin(),
 		compileIndexEJSPlugin(),
 		compileServiceWorkerPlugin(),

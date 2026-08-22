@@ -17,10 +17,11 @@ function CheckPrerequisites({ children }: { children: ComponentChild }) {
 		// });
 	}, []);
 
-	const prereqPath = `/${prereq}`;
-	if (prereq) {
-		if (path !== prereqPath) route(prereq);
-	} else if (path === prereqPath) route('/');
+	console.warn('⚠️ Prerequisite checks disabled.');
+	// const prereqPath = `/${prereq}`;
+	// if (prereq) {
+	// 	if (path !== prereqPath) route(prereq);
+	// } else if (path === prereqPath) route('/');
 
 	return children;
 }
