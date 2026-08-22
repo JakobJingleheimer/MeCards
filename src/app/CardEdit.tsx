@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 import type {
 	FocusEventHandler,
+	GenericEventHandler,
 	SubmitEventHandler,
 } from 'preact';
 import { useLocation, useRoute } from 'preact-iso';
@@ -46,7 +47,9 @@ export default function CardEdit() {
 			.then((key) => key && setLogo(key));
 	}, [card.label]);
 
-	const onSubmit: SubmitEventHandler<HTMLFormElement & { elements: {
+	const handleReset: GenericEventHandler<HTMLFormElement> = () => setLogo('');
+
+	const handleSubmit: SubmitEventHandler<HTMLFormElement & { elements: {
 		barcode: HTMLInputElement,
 		label: HTMLInputElement,
 		notes: HTMLInputElement,
@@ -80,7 +83,8 @@ export default function CardEdit() {
 			<form
 				className="align-center container stack"
 				id={FORM_ID}
-				onSubmit={onSubmit}
+				onReset={handleReset}
+				onSubmit={handleSubmit}
 			>
 				<img className="size-5xl" src={logo} />
 
