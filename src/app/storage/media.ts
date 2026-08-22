@@ -12,6 +12,11 @@ export const media = {
 			.then((cache) => cache.match(key))
 			.then((rsp) => rsp ? key : undefined);
 	},
+	async remove(key: string) {
+		return caches
+			.open(CACHE_NAME)
+			.then((cache) => cache.delete(key));
+	},
 	async save(file: File, type: MediaType) {
 		return caches
 			.open(CACHE_NAME) // Should this be kept open?
