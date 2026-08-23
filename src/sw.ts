@@ -24,16 +24,15 @@ self.addEventListener('fetch', function onFetch(event) {
 		? 'network-first' // app file
 		: 'cache-first'; // card asset
 
-	const handler = handlers[strategy];
-
-	console.table({
-		'req.url': req.url,
-		// 'self': self.location.origin,
-		'cors': url.origin !== self.location.origin,
-		strategy,
-	});
-
-	event.respondWith(handler(req));
+	event.respondWith(
+		handlers[strategy](req)
+			.catch(() => console.table({
+				'req.url': req.url,
+				// 'self': self.location.origin,
+				'cors': url.origin !== self.location.origin,
+				strategy,
+			}))
+	);
 });
 
 const isDocReq = (req: Request) => (
