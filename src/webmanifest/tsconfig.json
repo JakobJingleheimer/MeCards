@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "esnext",
+    ],
+  },
+  "include": [
+    "./**/*.ts",
+    "../files.d.ts",
+  ],
+  "exclude": [
+    "./**/*.spec.ts",
+  ],
+}

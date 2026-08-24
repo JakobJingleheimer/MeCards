@@ -33,5 +33,7 @@
   "references": [
     { "path": "./build" },
     { "path": "./src/app" },
+    { "path": "./src/sw" },
+    { "path": "./src/webmanifest" },
   ]
 }
