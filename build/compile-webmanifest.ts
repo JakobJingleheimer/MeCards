@@ -4,6 +4,7 @@ import {
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 
 import {
 	type BuildOptions,
@@ -12,6 +13,13 @@ import {
 } from 'esbuild';
 
 import { findEntrypoint } from './find-entrypoint.ts';
+import {
+	getInKey,
+	getInPrefix,
+	getOutPrefix,
+	type FileName,
+} from './get-compilation-keys.ts';
+
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
@@ -21,131 +29,94 @@ export type IndexEJSOptions = Partial<{
 const encoder = new TextEncoder();
 const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
 
+const cwd = `${process.cwd()}${path.sep}`;
+
 const defaultFilename = 'webmanifest.ts';
 export const compileWebmanifestPlugin = (
-	filename: `${string}.${string}` = defaultFilename,
+	inName: FileName = defaultFilename,
+	outName: FileName = 'app.webmanifest',
 ): Plugin => ({
 	name: 'Compile app.webmanifest',
-	async setup({ initialOptions, onEnd }) {
-		const outdir = initialOptions.outdir!;
-		const outdirName = path.basename(outdir);
+	async setup({ initialOptions: buildConfig, onEnd }) {
+		buildConfig.metafile ||= true;
+		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const originalOutputFilename = filename.replace(path.extname(filename), '.js');
-		const originalPath = findEntrypoint(initialOptions, filename);
+		const inPath = findEntrypoint(buildConfig, inName);
+
+		if (!inPath) {
+			const msg = [`No entry-point found for "${defaultFilename}".`];
+			if (inName === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+
+			throw new Error(msg.join(' '));
+		}
+
+		const transName = inName.replace(path.extname(inName), '.js') as FileName;
+		const inPfx = getInPrefix(inPath, inName, cwd);
+		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
+		const inKey = getInKey(outPfx, inPfx, transName);
+		const outKey = path.join(outPfx, inPfx, outName);
+		const outPath = path.join(buildConfig.outdir!, inPfx, outName);
 
 		onEnd(async ({ metafile, outputFiles }) => {
-			const {
-				finalOutputPath,
-				originalOutputPath,
-			} = initialOptions.write === false
-				? await composeForStream(initialOptions, outputFiles, { filename, originalOutputFilename })
-				: await composeForFS(initialOptions, originalPath);
+			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
 
-			if (metafile) {
-				const originalOutputSegment = path.join(
-					outdirName,
-					originalOutputPath.replace(outdir, ''),
-				);
-				const finalOutputSegment = path.join(
-					outdirName,
-					finalOutputPath.replace(outdir, ''),
-				);
+			await handler(
+				buildConfig,
+				outPath,
+				transName,
+				outputFiles,
+			);
 
-				metafile.outputs[finalOutputSegment] = metafile.outputs[originalOutputSegment]!;
+			// @ts-expect-error
+			metafile.outputs[outKey] = metafile?.outputs[inKey];
 
-				delete metafile.outputs[originalOutputSegment];
-			}
+			delete metafile?.outputs[inKey];
 		});
 	},
 });
 
-async function composeForFS(
-	initialOptions: BuildOptions,
-	originalPath: string,
+async function handleFileOnDisk(
+	buildConfig: BuildOptions,
+	outPath: string,
+	inPath: string,
 ) {
-	const idx = findEndOfLongestPrefix(
-		initialOptions.outdir,
-		originalPath,
-	);
-	const outSeg = originalPath.slice(
-		idx + 1 + originalPath
-		.slice(idx)
-		.indexOf(path.sep)
-	);
+	const rawContents = await readFile(inPath, 'utf8');
 
-	const originalOutputPath = path.join(
-		initialOptions.outdir!,
-		outSeg.replace('.ts', '.js'),
-	);
+	if (!rawContents) throw new Error(`File is empty "${inPath}".`);
 
-	const rawContents = await readFile(originalOutputPath, 'utf8');
+	const json = await compileJSON(rawContents, buildConfig);
 
-	if (!rawContents) throw new Error(`File is empty "${originalOutputPath}".`);
-
-	const json = await compileJSON(rawContents, initialOptions);
-
-	await writeFile(
-		originalOutputPath,
-		json,
-	);
-
-	const finalOutputPath = composeFinalOutputPath(originalOutputPath);
-	await rename(
-		originalOutputPath,
-		finalOutputPath,
-	);
-
-	return {
-		finalOutputPath,
-		originalOutputPath,
-	};
+	await writeFile(inPath, json);
+	await rename(inPath, outPath);
 }
 
-async function composeForStream(
-	initialOptions: BuildOptions,
+async function handleFileInMemory(
+	buildConfig: BuildOptions,
+	outPath: string,
+	inName: string,
 	outputFiles: BuildResult['outputFiles'],
-	{
-		filename,
-		originalOutputFilename,
-	}: {
-		filename: string,
-		originalOutputFilename: string,
-	},
 ) {
-	const entry = outputFiles!.find((item) => item.path.endsWith(originalOutputFilename));
+	const entry = outputFiles!.find((item) => item.path.endsWith(inName));
+
 	if (!entry) {
-		const msg = [`No entry found for ${originalOutputFilename}.`];
-		if (filename === defaultFilename) {
-			msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+		const msg = [`No entry found for "${inName}".`];
+		if (inName === defaultFilename) {
+			msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
 		}
 		throw new Error(msg.join(' '));
 	}
 
-	const contents = await compileJSON(entry.text, initialOptions);
+	const contents = await compileJSON(entry.text, buildConfig);
 	entry.contents = encodeUTF8(contents);
-
-	const finalOutputPath = composeFinalOutputPath(entry.path);
-	const originalOutputPath = entry.path;
-
-	entry.path = finalOutputPath;
-
-	return {
-		finalOutputPath,
-		originalOutputPath,
-	};
+	entry.path = outPath;
 }
 
-const composeFinalOutputPath = (outputPath: string) => path.join(
-	path.dirname(outputPath),
-	'app.webmanifest',
-);
-
-const compileJSON = (contents: string, initialOptions: BuildOptions) => import(`data:text/javascript;charset=utf-8,${encodeURIComponent(contents)}`)
-	.then((m) => JSON.stringify(m.default, null, initialOptions.minify ? 0 : 2))
+const compileJSON = (contents: string, buildConfig: BuildOptions) => import(`data:text/javascript;charset=utf-8,${encodeURIComponent(contents)}`)
+	.then((m) => JSON.stringify(m.default, null, buildConfig.minify ? 0 : 2))
 	.catch((err) => {
 		if (
 			err.message.includes(ERR_REL_IMPORT)
-			&& initialOptions.splitting
+			&& buildConfig.splitting
 		) console.error(
 			'A bug in esbuild causes a CJS ↔︎ ESM interop polyfill to be injected into all ES modules,',
 			'regardless of whether they need it. If your file does not contain unreplaced imports',
@@ -157,10 +128,3 @@ const compileJSON = (contents: string, initialOptions: BuildOptions) => import(`
 	});
 
 const ERR_REL_IMPORT = 'Invalid relative URL or base scheme is not hierarchical';
-
-function findEndOfLongestPrefix(a: string = '', b: string = '') {
-	let i = 0;
-	while (a[i] === b[i]) i++;
-
-	return i;
-}
