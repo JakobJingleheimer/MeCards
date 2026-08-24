@@ -32,24 +32,23 @@ export const compileServiceWorkerPlugin = (
 		buildConfig.metafile ||= true;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const transName = inName.replace('.ts', '.js') as FileName;
+		const inPath = findEntrypoint(buildConfig, inName);
+
+		if (!inPath) {
+			const msg = [`No entry-point found for "${defaultFilename}".`];
+			if (inName === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+
+			throw new Error(msg.join(' '));
+		}
+
+		const transName = inName.replace(path.extname(inName), '.js') as FileName;
+		const inPfx = getInPrefix(inPath, inName, cwd);
 		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
+		const inKey = getInKey(outPfx, inPfx, transName);
+		const outKey = getOutKey(outPfx, outName);
 		const outPath = getRootPath(buildConfig.outdir, outName);
 
 		onEnd(async ({ metafile, outputFiles }) => {
-			const inPath = findEntrypoint(buildConfig, inName);
-
-			if (!inPath) {
-				const msg = [`No entry-point found for "${defaultFilename}".`];
-				if (inName === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
-
-				throw new Error(msg.join(' '));
-			}
-
-			const inPfx = getInPrefix(inPath, inName, cwd);
-			const inKey = getInKey(outPfx, inPfx, transName);
-			const outKey = getOutKey(outPfx, outName);
-
 			// @ts-expect-error
 			metafile.outputs[outKey] = metafile?.outputs[inKey];
 

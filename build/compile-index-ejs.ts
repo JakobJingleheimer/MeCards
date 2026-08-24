@@ -59,11 +59,14 @@ export const compileIndexEJSPlugin = (
 			throw new Error(msg.join(' '));
 		}
 
+		const inPfx = getInPrefix(inPath, inName, cwd);
 		const outName = 'index.html' as FileName;
 		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
+		const inKey = getInKey(outPfx, inPfx, inName);
+		const outKey = getOutKey(outPfx, outName);
 		const outPath = getRootPath(buildConfig.outdir, outName);
 
-		onEnd(async ({ outputFiles, metafile }) => {
+		onEnd(async ({ metafile, outputFiles }) => {
 			const tmpl = await readFile(inPath, 'utf8');
 			const assets = composeBuildMetadata(metafile?.outputs!, buildConfig);
 
@@ -81,10 +84,6 @@ export const compileIndexEJSPlugin = (
 				inName,
 				outputFiles!,
 			);
-
-			const inPfx = getInPrefix(inPath, inName, cwd);
-			const inKey = getInKey(outPfx, inPfx, inName);
-			const outKey = getOutKey(outPfx, outName);
 
 			// @ts-expect-error
 			metafile.outputs[outKey] = metafile?.outputs[inKey];
