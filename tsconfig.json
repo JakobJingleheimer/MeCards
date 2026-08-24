@@ -1,9 +1,7 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    "outDir": "./dist",
     "lib": [
-      "DOM",
       "esnext",
     ],
 
@@ -21,18 +19,6 @@
     "skipLibCheck": true,
     "strict": true,
     "verbatimModuleSyntax": true,
-
-    // Preact
-    "jsx": "preserve",
-    "jsxFactory": "h",
-		"jsxFragmentFactory": "Fragment",
-    "jsxImportSource": "preact",
-    "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
-      "react-dom": ["./node_modules/preact/compat/"],
-      "react-dom/*": ["./node_modules/preact/compat/*"]
-    },
 
     // Other Outputs
     "sourceMap": true,

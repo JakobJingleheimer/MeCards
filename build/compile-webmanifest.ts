@@ -22,7 +22,9 @@ const encoder = new TextEncoder();
 const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
 
 const defaultFilename = 'webmanifest.ts';
-export const compileWebmanifestPlugin = (filename: string = defaultFilename): Plugin => ({
+export const compileWebmanifestPlugin = (
+	filename: `${string}.${string}` = defaultFilename,
+): Plugin => ({
 	name: 'Compile app.webmanifest',
 	async setup({ initialOptions, onEnd }) {
 		const outdir = initialOptions.outdir!;

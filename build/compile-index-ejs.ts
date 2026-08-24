@@ -14,6 +14,15 @@ import {
 
 import { composeBuildMetadata } from './build-metadata.ts';
 import { findEntrypoint } from './find-entrypoint.ts';
+import {
+	getInKey,
+	getInPrefix,
+	getOutPrefix,
+	getOutKey,
+	getRootPath,
+	type FileName,
+} from './get-compilation-keys.ts';
+
 
 export type IndexEJSOptions = Partial<{
 	env: 'development' | 'production' | 'test',
@@ -27,7 +36,7 @@ const cwd = `${process.cwd()}${path.sep}`;
 
 const defaultFilename = 'index.ejs';
 export const compileIndexEJSPlugin = (
-	filename: string = defaultFilename,
+	inName: FileName = defaultFilename,
 	{
 		env,
 		hot,
@@ -41,18 +50,22 @@ export const compileIndexEJSPlugin = (
 		buildConfig.metafile ||= true;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const templatePath = findEntrypoint(buildConfig, filename);
+		const inPath = findEntrypoint(buildConfig, inName);
 
-		if (!templatePath) {
+		if (!inPath) {
 			const msg = [`No entry-point found for EJS template "${defaultFilename}".`];
-			if (filename === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+			if (inName === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
 
 			throw new Error(msg.join(' '));
 		}
 
+		const outName = 'index.html' as FileName;
+		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
+		const outPath = getRootPath(buildConfig.outdir, outName);
+
 		onEnd(async ({ outputFiles, metafile }) => {
-			const tmpl = await readFile(templatePath, 'utf8');
-			const assets = composeBuildMetadata(metafile!, buildConfig);
+			const tmpl = await readFile(inPath, 'utf8');
+			const assets = composeBuildMetadata(metafile?.outputs!, buildConfig);
 
 			const compiledHTML = ejs.render(tmpl, {
 				assets,
@@ -60,70 +73,52 @@ export const compileIndexEJSPlugin = (
 				hot,
 			});
 
-			const handler = buildConfig.write === false ? handleFileOnDisk : handleFileInMemory;
+			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
 
 			await handler(
 				compiledHTML,
-				buildConfig.outdir!,
-				filename,
+				outPath,
+				inName,
 				outputFiles!,
 			);
 
-			const inPrefix = path.join(
-				...templatePath
-					.replace(cwd, '')
-					.replace(filename, '')
-					.split(path.sep)
-					.slice(1) // This assumes source code lives (directly) in a dir like `src/`
-			);
-			const outPrefix = buildConfig.outdir?.replace(cwd, '')!;
-
-			const templateKey = path.join(outPrefix, inPrefix, filename);
-			const replacementKey = path.join(outPrefix, 'index.html');
+			const inPfx = getInPrefix(inPath, inName, cwd);
+			const inKey = getInKey(outPfx, inPfx, inName);
+			const outKey = getOutKey(outPfx, outName);
 
 			// @ts-expect-error
-			metafile.outputs[replacementKey] = metafile?.outputs[templateKey];
+			metafile.outputs[outKey] = metafile?.outputs[inKey];
 
-			delete metafile?.outputs[templateKey];
+			delete metafile?.outputs[inKey];
 		});
 	},
 });
 
-async function handleFileInMemory(
+async function handleFileOnDisk(
 	compiledHTML: string,
-	outdir: string,
-	ogFilename: string,
+	outPath: string,
+	inPath: string,
 ) {
-	const ogOutpath = path.join(outdir!, ogFilename);
-	await writeFile(
-		ogOutpath,
-		compiledHTML,
-	);
-	await rename(
-		ogOutpath,
-		makeFinalOutpath(outdir!),
-	);
+	await writeFile(inPath, compiledHTML);
+	await rename(inPath, outPath);
 }
 
-function handleFileOnDisk(
+function handleFileInMemory(
 	compiledHTML: string,
-	outdir: string,
-	ogFilename: string,
+	outPath: string,
+	inName: string,
 	outputFiles: OutputFile[],
 ) {
-	const entry = outputFiles!.find((item) => item.path.endsWith(ogFilename));
+	const entry = outputFiles!.find((item) => item.path.endsWith(inName));
 
 	if (!entry) {
-		const msg = [`No entry found for "${ogFilename}".`];
-		if (ogFilename === defaultFilename) {
+		const msg = [`No entry found for "${inName}".`];
+		if (inName === defaultFilename) {
 			msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
 		}
 		throw new Error(msg.join(' '));
 	}
 
-	// convertOutputFiles
 	entry.contents = encodeUTF8(compiledHTML);
-	entry.path = makeFinalOutpath(outdir);
+	entry.path = outPath;
 }
-
-const makeFinalOutpath = (outdir: string) => path.join(outdir, 'index.html');

@@ -3,46 +3,76 @@ import {
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 
 import {
-	type BuildOptions,
-	type BuildResult,
+	type OutputFile,
 	type Plugin,
 } from 'esbuild';
+import {
+	getInPrefix,
+	getOutPrefix,
+	getInKey,
+	getOutKey,
+	getRootPath,
+	type FileName,
+} from './get-compilation-keys.ts';
+import { findEntrypoint } from './find-entrypoint.ts';
 
-const defaultFilename = 'sw.ts';
+
+const cwd = `${process.cwd()}${path.sep}`;
+
+const defaultFilename = 'main.ts';
 export const compileServiceWorkerPlugin = (
-	filename: string = defaultFilename,
+	inName: FileName = defaultFilename,
+	outName: FileName = 'sw.js',
 ): Plugin => ({
 	name: 'Compile ServiceWorker',
 	async setup({ initialOptions: buildConfig, onEnd }) {
 		buildConfig.metafile ||= true;
 		if (!buildConfig.metafile) throw new Error('BuildOptions.metafile is required');
 
-		const swOutputFilename = filename.replace('.ts', '.js');
+		const transName = inName.replace('.ts', '.js') as FileName;
+		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
+		const outPath = getRootPath(buildConfig.outdir, outName);
 
 		onEnd(async ({ metafile, outputFiles }) => {
-			const assets: string[] = [];
-			for (const output of Object.keys(metafile?.outputs!)) {
-				const asset = output!.replace('dist', '');
+			const inPath = findEntrypoint(buildConfig, inName);
 
-				if (asset.endsWith(swOutputFilename)) continue;
+			if (!inPath) {
+				const msg = [`No entry-point found for "${defaultFilename}".`];
+				if (inName === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
+
+				throw new Error(msg.join(' '));
+			}
+
+			const inPfx = getInPrefix(inPath, inName, cwd);
+			const inKey = getInKey(outPfx, inPfx, transName);
+			const outKey = getOutKey(outPfx, outName);
+
+			// @ts-expect-error
+			metafile.outputs[outKey] = metafile?.outputs[inKey];
+
+			delete metafile?.outputs[inKey];
+
+			const assets: FileName[] = [];
+			for (const output of Object.keys(metafile?.outputs!)) {
+				const asset = output!.replace(outPfx, '') as FileName;
+
+				if (asset.endsWith(outName)) continue;
 				if (asset.includes('webmanifest')) continue;
 
 				assets.push(asset);
 			}
 
-			const swPath = path.join(buildConfig.outdir!, swOutputFilename);
-			if (!swPath) {
-				const msg = [`No entry-point found for "${defaultFilename}".`];
-				if (filename === defaultFilename) msg[1] = `Filename is the default ('${defaultFilename}'); perhaps the actual filename is different?`;
-
-				throw new Error(msg.join(' '));
-			}
-
 			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
 
-			await handler(assets, swPath, outputFiles!);
+			await handler(
+				assets,
+				outPath,
+				transName,
+				outputFiles!
+			);
 		});
 	},
 });
@@ -52,31 +82,36 @@ const encoder = new TextEncoder();
 const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encode(...args);
 
 async function handleFileOnDisk(
-	assets: string[],
-	swPath: string,
+	assets: FileName[],
+	outPath: string,
 ) {
-	const sw = await readFile(swPath, 'utf8');
+	const sw = await readFile(outPath, 'utf8');
 
 	const replaced = sw.replace('__APP_FILES__', JSON.stringify(assets));
 
-	await writeFile(swPath, replaced);
+	await writeFile(outPath, replaced);
 }
 
 async function handleFileInMemory(
-	assets: string[],
-	swPath: string,
-	outputFiles: Exclude<BuildResult<BuildOptions>['outputFiles'], undefined>,
+	assets: FileName[],
+	outPath: string,
+	inName: FileName,
+	outputFiles: OutputFile[],
 ) {
-	const idx = outputFiles.findIndex((outfile) => outfile.path === swPath);
+	const entry = outputFiles!.find((item) => item.path.endsWith(inName));
 
-	if (!idx) throw new Error('Could not find ServiceWorker in outputFiles');
+	if (!entry) {
+		const msg = [`No entry found for "${inName}".`];
+		if (inName === defaultFilename) {
+			msg[1] = `Filename is the default ("${defaultFilename}"); perhaps the actual filename is different?`;
+		}
+		throw new Error(msg.join(' '));
+	}
 
 	const replaced = decoder
-		.decode(outputFiles[idx]!.contents)
+		.decode(entry.contents)
 		.replace('__APP_FILES__', JSON.stringify(assets));
 
-	outputFiles[idx] = {
-		...outputFiles[idx]!,
-		contents: encodeUTF8(replaced),
-	};
+	entry.contents = encodeUTF8(replaced);
+	entry.path = outPath;
 }

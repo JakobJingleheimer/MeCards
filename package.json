@@ -28,7 +28,8 @@
     "start": "node --run build && node --run serve",
     "start:prod": "node --run build:prod && node --run serve",
     "serve": "PORT=8443 http-server -S -C ./cert.pem -K key.pem ./dist",
-    "test": "node --test",
+    "test:unit": "node --experimental-config-file=./node.config.test.json --test",
+    "test:units": "node --run test:unit -- './build/**/*.spec.ts' './src/**/*.spec.ts'",
     "types:check": "tsc --build --noEmit"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "react-dom": "npm:@preact/compat"
   },
   "devDependencies": {
+    "@jedmao/location": "^3.0.0",
     "@testing-library/preact": "^3.2.4",
     "@types/ejs": "^3.1.5",
     "@types/lodash.debounce": "^4.0.9",
