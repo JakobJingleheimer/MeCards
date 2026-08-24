@@ -23,6 +23,7 @@ export default function CardEdit() {
 		? {} as CardData
 		: data.get(id) ?? {} as CardData
 	);
+	const [disabled, setDisabled] = useState<boolean>();
 	const [logo, setLogo] = useState<URL['href']>();
 	const { route } = useLocation();
 
@@ -31,7 +32,10 @@ export default function CardEdit() {
 	}) => {
 		if (!merchantName) return;
 
-		const url = await retrieveMerchantLogo(merchantName);
+		setDisabled(true);
+
+		const url = await retrieveMerchantLogo(merchantName)
+			.finally(() => setDisabled(false));
 
 		setLogo(url);
 	};
@@ -140,7 +144,11 @@ export default function CardEdit() {
 							>Delete</button>
 					}
 
-					<button className="primary" type="submit">Save</button>
+					<button
+						className="primary"
+						disabled={disabled}
+						type="submit"
+					>Save</button>
 				</div>
 			</form>
 
