@@ -1,0 +1,21 @@
+@layer kelp.theme {
+	:where(:root) {
+		--color-blue-base: #1C9AF3;
+		--color-blue-hue: 246.74;
+		--color-blue-chroma: 0.9484760980127133;
+	}
+}
+
+@layer kelp.extend {
+	.action-header {
+		flex-wrap: wrap;
+
+		&::after {
+			border-bottom: 1px solid;
+			content: '';
+			display: block;
+			margin-bottom: var(--size-s);
+			width: 100%;
+		}
+	}
+}

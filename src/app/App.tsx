@@ -7,6 +7,7 @@ import {
 } from 'preact-iso';
 import 'kelpui/css/kelp.css';
 
+import './kelpui.css';
 import './App.module.css';
 
 import CheckPrerequisites from './Prerequisites/CheckPrerequisites.tsx';

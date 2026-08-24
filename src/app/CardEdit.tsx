@@ -47,6 +47,11 @@ export default function CardEdit() {
 			.then((key) => key && setLogo(key));
 	}, [card.label]);
 
+	const handleDelete: GenericEventHandler<HTMLButtonElement> = () => {
+		data.delete(id);
+		route('/');
+	};
+
 	const handleReset: GenericEventHandler<HTMLFormElement> = () => setLogo('');
 
 	const handleSubmit: SubmitEventHandler<HTMLFormElement & { elements: {
@@ -127,12 +132,46 @@ export default function CardEdit() {
 				<div className="split">
 					{isNew
 						? <button type="reset">Reset</button>
-						: <button className="danger" onClick={() => data.delete(id)} type="button">Delete</button>
+						: <button
+								className="danger"
+								command="show-modal"
+								commandFor={CONFIRM_MODAL_ID}
+								type="button"
+							>Delete</button>
 					}
 
 					<button className="primary" type="submit">Save</button>
 				</div>
 			</form>
+
+			<dialog
+				closedBy="closerequest"
+				id={CONFIRM_MODAL_ID}
+			>
+				<header className="action-header">
+					<h1>Delete card data for {card.label}?</h1>
+
+					<button
+						aria-label="cancel"
+						className="plain"
+						command="request-close"
+						commandFor={CONFIRM_MODAL_ID}
+					>✕</button>
+				</header>
+
+				<p>This cannot be undone—you will need to re-enter the card data.</p>
+
+				<div className="flex justify-end">
+					<button
+						className="danger"
+						command="request-close"
+						commandFor={CONFIRM_MODAL_ID}
+						onClick={handleDelete}
+					>Yes, delete it</button>
+				</div>
+			</dialog>
 		</main>
 	);
 }
+
+const CONFIRM_MODAL_ID = 'confirm-delete';

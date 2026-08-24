@@ -1,11 +1,3 @@
-@layer kelp.theme {
-	:where(:root) {
-		--color-blue-base: #1C9AF3;
-		--color-blue-hue: 246.74;
-		--color-blue-chroma: 0.9484760980127133;
-	}
-}
-
 /* :where(:root) :global(.light) {
 	--color-background: #1C9AF3;
 } */
