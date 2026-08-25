@@ -7,7 +7,7 @@
 }
 
 @layer kelp.extend {
-	.action-header {
+	dialog .action-header {
 		flex-wrap: wrap;
 
 		&::after {
@@ -18,4 +18,50 @@
 			width: 100%;
 		}
 	}
+
+	.toaster[popover] {
+		border: unset;
+		left: auto;
+		margin: unset;
+		padding: var(--size-5xs);
+		right: var(--size-2xs);
+		top: var(--size-m);
+	}
+
+	.toast {
+		box-shadow:
+			0
+			var(--size-6xs)
+			var(--size-5xs)
+			var(--color-gray-90);
+		position: relative;
+
+		&:hover {
+			z-index: 1;
+		}
+
+		& + & {
+			translate: 0 calc(-100% + var(--size-m));
+		}
+	}
+}
+
+@layer kelp.helpers {
+	.-margin-6xs { margin: calc(-1 * var(--size-6xs)) }
+	.-margin-5xs { margin: calc(-1 * var(--size-5xs)) }
+	.-margin-4xs { margin: calc(-1 * var(--size-4xs)) }
+	.-margin-3xs { margin: calc(-1 * var(--size-3xs)) }
+	.-margin-2xs { margin: calc(-1 * var(--size-2xs)) }
+	.-margin-1xs { margin: calc(-1 * var(--size-1xs)) }
+
+	.-margin-s { margin: calc(-1 * var(--size-s)) }
+	.-margin-m { margin: calc(-1 * var(--size-m)) }
+	.-margin-l { margin: calc(-1 * var(--size-l)) }
+
+	.-margin-6xl { margin: calc(-1 * var(--size-6xl)) }
+	.-margin-5xl { margin: calc(-1 * var(--size-5xl)) }
+	.-margin-4xl { margin: calc(-1 * var(--size-4xl)) }
+	.-margin-3xl { margin: calc(-1 * var(--size-3xl)) }
+	.-margin-2xl { margin: calc(-1 * var(--size-2xl)) }
+	.-margin-1xl { margin: calc(-1 * var(--size-1xl)) }
 }

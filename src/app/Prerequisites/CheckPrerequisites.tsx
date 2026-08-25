@@ -1,8 +1,8 @@
 import type { ComponentChild } from 'preact';
-import { useLocation } from 'preact-iso';
 import { useState, useEffect } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
 
-function CheckPrerequisites({ children }: { children: ComponentChild }) {
+export default function CheckPrerequisites({ children }: { children: ComponentChild }) {
 	const [prereq, setPrereq] = useState<'install' | 'no-storage'>();
 	const { path, route } = useLocation();
 
@@ -25,5 +25,3 @@ function CheckPrerequisites({ children }: { children: ComponentChild }) {
 
 	return children;
 }
-
-export default CheckPrerequisites;

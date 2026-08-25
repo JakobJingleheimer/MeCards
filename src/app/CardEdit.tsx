@@ -1,16 +1,19 @@
+import XMarkIcon from '@tabler/icons/outline/x.svg';
 import { nanoid } from 'nanoid/non-secure';
 import type {
 	FocusEventHandler,
 	GenericEventHandler,
 	SubmitEventHandler,
 } from 'preact';
-import { useLocation, useRoute } from 'preact-iso';
 import { useEffect, useState } from 'preact/hooks';
+import { useLocation, useRoute } from 'preact-iso';
 
 import { generateBarcode } from './generate-barcode.ts';
 import { data, type CardData } from './storage/data.ts';
 import { media } from './storage/media.ts';
+import { useToaster } from './toaster/context.tsx';
 import { composeMerchantSlug, retrieveMerchantLogo } from './merchant-info.ts';
+
 
 const FORM_ID = 'upsert';
 const ID_NEW = 'new';
@@ -164,7 +167,9 @@ export default function CardEdit() {
 						className="plain"
 						command="request-close"
 						commandFor={CONFIRM_MODAL_ID}
-					>✕</button>
+					>
+						<XMarkIcon />
+					</button>
 				</header>
 
 				<p>This cannot be undone—you will need to re-enter the card data.</p>

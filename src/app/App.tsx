@@ -12,6 +12,8 @@ import './App.module.css';
 
 import CheckPrerequisites from './Prerequisites/CheckPrerequisites.tsx';
 import { Footer } from './Footer.tsx';
+import { ToasterProvider } from './toaster/context.tsx';
+import Toaster from './toaster/Toaster.tsx';
 
 const CardEdit = lazy(() => import('./CardEdit.tsx'));
 const CardList = lazy(() => import('./CardList.tsx'));
@@ -22,16 +24,20 @@ export function App() {
 	return (
 		<LocationProvider>
 			<ErrorBoundary>
-				<CheckPrerequisites>
-					<Router>
-						<Route path="/install" component={Install} />
-						<Route path="/no-storage" component={NoStorage} />
-						<Route path="/" component={CardList} />
-						<Route path="/card/:id" component={({ path }) => <CardEdit key={path} />} />
-					</Router>
-				</CheckPrerequisites>
+				<ToasterProvider>
+					<CheckPrerequisites>
+						<Toaster />
 
-				<Footer />
+						<Router>
+							<Route path="/install" component={Install} />
+							<Route path="/no-storage" component={NoStorage} />
+							<Route path="/" component={CardList} />
+							<Route path="/card/:id" component={({ path }) => <CardEdit key={path} />} />
+						</Router>
+					</CheckPrerequisites>
+
+					<Footer />
+				</ToasterProvider>
 			</ErrorBoundary>
 		</LocationProvider>
 	);
