@@ -62,6 +62,11 @@ export default function CardEdit() {
 	const handleDelete: GenericEventHandler<HTMLButtonElement> = () => {
 		data.delete(id);
 		route('/');
+		push({
+			kind: 'primary',
+			heading: 'Card deleted',
+			message: `${card.label} ${card.barcode}`,
+		})
 	};
 
 	const handleReset: GenericEventHandler<HTMLFormElement> = () => setLogo('');
@@ -165,7 +170,7 @@ export default function CardEdit() {
 				id={CONFIRM_MODAL_ID}
 			>
 				<header className="action-header">
-					<h1>Delete card data for {card.label}?</h1>
+					<h1>Delete this {card.label} card?</h1>
 
 					<button
 						aria-label="cancel"
@@ -177,7 +182,7 @@ export default function CardEdit() {
 					</button>
 				</header>
 
-				<p>This cannot be undone—you will need to re-enter the card data.</p>
+				<p>This cannot be undone (you'll need to re-create the card).</p>
 
 				<div className="flex justify-end">
 					<button
