@@ -174,7 +174,7 @@ export default function CardEdit() {
 
 					<button
 						aria-label="cancel"
-						className="plain"
+						className="-margin-6xs padding-6xs plain"
 						command="request-close"
 						commandFor={CONFIRM_MODAL_ID}
 					>
