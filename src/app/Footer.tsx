@@ -12,7 +12,7 @@ export function Footer() {
 
 	const handleSearch = useMemo(
 		() => debounce(
-			({ target: { value } }: ChangeEvent<HTMLInputElement>) => route(`/?search=${value}`),
+			({ currentTarget: { value } }: ChangeEvent<HTMLInputElement>) => route(`/?search=${value}`),
 			300,
 		),
 		[],
