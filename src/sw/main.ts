@@ -1,6 +1,8 @@
 import handleFetch from './handle-fetch.ts';
 import { CACHE_KEY } from './const.ts';
 
+
+declare var self: ServiceWorkerGlobalScope;
 declare var __APP_FILES__: string[]; // esbuild replaces this with the array of file-paths
 
 // PWA Registration
