@@ -29,6 +29,7 @@ export default function CardEdit() {
 	const [disabled, setDisabled] = useState<boolean>();
 	const [logo, setLogo] = useState<URL['href']>();
 	const { route } = useLocation();
+	const { push } = useToaster();
 
 	const getMerchantLogo: FocusEventHandler<HTMLInputElement> = async ({
 		currentTarget: { value: merchantName },
@@ -38,6 +39,10 @@ export default function CardEdit() {
 		setDisabled(true);
 
 		const url = await retrieveMerchantLogo(merchantName)
+			.catch(() => push({
+				kind: 'warning',
+				message: `Could not find a logo for “${merchantName}”.`,
+			}))
 			.finally(() => setDisabled(false));
 
 		setLogo(url);
