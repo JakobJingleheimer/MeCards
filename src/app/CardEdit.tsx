@@ -61,6 +61,7 @@ export default function CardEdit() {
 
 	const handleDelete: GenericEventHandler<HTMLButtonElement> = () => {
 		data.delete(id);
+		media.remove(`${id}.svg`, 'card');
 		route('/');
 		push({
 			kind: 'primary',

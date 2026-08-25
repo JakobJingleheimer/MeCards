@@ -12,7 +12,11 @@ export const media = {
 			.then((cache) => cache.match(key))
 			.then((rsp) => rsp ? key : undefined);
 	},
-	async remove(key: string) {
+	async remove(filename: File['name'], type: MediaType) {
+		const key = type
+			? media.composeUrl(filename, type)
+			: filename;
+
 		return caches
 			.open(CACHE_NAME)
 			.then((cache) => cache.delete(key));
