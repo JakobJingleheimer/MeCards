@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://json.schemastore.org/dependabot-2.0.json
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    commit-message:
+      prefix: deps
+      include: scope
+    directory: /
+    labels:
+      - "deps"
+      - "npm"
+    open-pull-requests-limit: 10
+    schedule:
+      interval: monthly
+  - package-ecosystem: github-actions
+    commit-message:
+      prefix: setup
+      include: scope
+    directory: /
+    labels:
+      - "deps"
+      - "gh actions"
+    schedule:
+      interval: monthly
