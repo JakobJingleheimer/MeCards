@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ci.yml
+      - build/**
+      - src/**
+      - node.config.test.json
+      - package.json
+      - tsconfig.json
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ci.yml
+      - build/**
+      - src/**
+      - node.config.test.json
+      - package.json
+      - tsconfig.json
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Code quality
+
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Clean install dependencies
+        run: npm ci
+
+      - name: Check types
+        run: node --run types:check
+
+  test:
+    name: Unit & e2e tests
+
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Clean install dependencies
+        run: npm ci
+
+      - name: Run unit & e2e tests
+        run: |
+          node --version
+          node --run test:units
