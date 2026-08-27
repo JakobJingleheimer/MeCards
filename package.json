@@ -1,6 +1,6 @@
 {
-  "name": "mecards",
-  "version": "0.0.1",
+  "name": "MeCards",
+  "version": "1.0.0-rc.1",
   "description": "Store membership and points cards persistently. This PWA must be installed for persistent storage to be allowed by the device.",
   "keywords": [
     "barcodes",
@@ -9,14 +9,11 @@
     "mobile web app",
     "membership cards"
   ],
-  "homepage": "https://github.com/JakobJingleheimer/mecards#readme",
+  "homepage": "https://github.com/JakobJingleheimer/MeCards#readme",
   "bugs": {
-    "url": "https://github.com/JakobJingleheimer/mecards/issues"
+    "url": "https://github.com/JakobJingleheimer/MeCards/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JakobJingleheimer/mecards.git"
-  },
+  "repository": "github:JakobJingleheimer/MeCards",
   "license": "MIT",
   "author": "JakobJingleheimer",
   "type": "module",
