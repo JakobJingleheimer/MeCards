@@ -16,9 +16,8 @@ export default function handleFetch(event: FetchEvent) {
 	event.respondWith(
 		handlers[strategy](req)
 			.catch((err) => {
-				console.table({
+				if (self.location.search.includes('debug=1')) console.table({
 					'req.url': req.url,
-					// 'self': self.location.origin,
 					'cors': url.origin !== self.location.origin,
 					strategy,
 				});
