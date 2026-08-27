@@ -55,12 +55,16 @@ export const compileWebmanifestPlugin = (
 		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
 		const inKey = getInKey(outPfx, inPfx, transName);
 		const outKey = path.join(outPfx, inPfx, outName);
+		const transPath = path.join(buildConfig.outdir!, inPfx, transName);
 		const outPath = path.join(buildConfig.outdir!, inPfx, outName);
 
 		onEnd(async ({ metafile, outputFiles }) => {
-			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
-
-			await handler(
+			if (buildConfig.write) await handleFileOnDisk(
+				buildConfig,
+				outPath,
+				transPath,
+			);
+			else await handleFileInMemory(
 				buildConfig,
 				outPath,
 				transName,
@@ -78,16 +82,16 @@ export const compileWebmanifestPlugin = (
 async function handleFileOnDisk(
 	buildConfig: BuildOptions,
 	outPath: string,
-	inPath: string,
+	transPath: string,
 ) {
-	const rawContents = await readFile(inPath, 'utf8');
+	const rawContents = await readFile(transPath, 'utf8');
 
-	if (!rawContents) throw new Error(`File is empty "${inPath}".`);
+	if (!rawContents) throw new Error(`File is empty "${transPath}".`);
 
 	const json = await compileJSON(rawContents, buildConfig);
 
-	await writeFile(inPath, json);
-	await rename(inPath, outPath);
+	await writeFile(transPath, json);
+	await rename(transPath, outPath);
 }
 
 async function handleFileInMemory(
