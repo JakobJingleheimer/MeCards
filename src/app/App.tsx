@@ -15,6 +15,7 @@ import { Footer } from './Footer.tsx';
 import { ToasterProvider } from './toaster/context.tsx';
 import Toaster from './toaster/Toaster.tsx';
 
+const About = lazy(() => import('./About.tsx'));
 const CardEdit = lazy(() => import('./CardEdit.tsx'));
 const CardList = lazy(() => import('./CardList.tsx'));
 const Install = lazy(() => import('./Prerequisites/Install.tsx'));
@@ -29,6 +30,7 @@ export function App() {
 						<Toaster />
 
 						<Router>
+							<Route path="/about" component={About} />
 							<Route path="/install" component={Install} />
 							<Route path="/no-storage" component={NoStorage} />
 							<Route path="/" component={CardList} />
