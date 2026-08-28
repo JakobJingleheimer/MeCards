@@ -1,9 +1,9 @@
 {
-	"$schema": "https://nodejs.org/dist/v26.7.0/docs/node-config-schema.json",
+	"$schema": "https://nodejs.org/dist/v24.18.0/docs/node-config-schema.json",
 	"nodeOptions": {
 		"warnings": false
 	},
-	"test": {
+	"testRunner": {
 		"experimental-test-module-mocks": true
 	}
 }
