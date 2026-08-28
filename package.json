@@ -36,7 +36,7 @@
     "kelpui": "^1.17.2",
     "lodash.debounce": "^4.0.8",
     "nanoid": "^6.0.1",
-    "preact": "^10.27.2",
+    "preact": "^10.29.8",
     "preact-iso": "^2.11.0",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat"
