@@ -1,5 +1,6 @@
 import {
 	readFile,
+	rename,
 	writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
@@ -46,6 +47,7 @@ export const compileServiceWorkerPlugin = (
 		const outPfx = getOutPrefix(buildConfig.outdir, cwd);
 		const inKey = getInKey(outPfx, inPfx, transName);
 		const outKey = getOutKey(outPfx, outName);
+		const transPath = path.join(buildConfig.outdir!, inPfx, transName);
 		const outPath = getRootPath(buildConfig.outdir, outName);
 
 		onEnd(async ({ metafile, outputFiles }) => {
@@ -64,13 +66,16 @@ export const compileServiceWorkerPlugin = (
 				assets.push(asset);
 			}
 
-			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
-
-			await handler(
+			if (buildConfig.write) await handleFileOnDisk(
+				assets,
+				outPath,
+				transPath,
+			);
+			else await handleFileInMemory(
 				assets,
 				outPath,
 				transName,
-				outputFiles!
+				outputFiles!,
 			);
 		});
 	},
@@ -83,8 +88,10 @@ const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encod
 async function handleFileOnDisk(
 	assets: FileName[],
 	outPath: string,
+	transPath: string,
 ) {
-	const sw = await readFile(outPath, 'utf8');
+	const sw = await readFile(transPath, 'utf8');
+	await rename(transPath, outPath);
 
 	const replaced = sw.replace('__APP_FILES__', JSON.stringify(assets));
 
