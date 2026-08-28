@@ -1,9 +1,27 @@
 {
-	"$schema": "https://nodejs.org/dist/v24.18.0/docs/node-config-schema.json",
-	"nodeOptions": {
-		"warnings": false
-	},
-	"testRunner": {
-		"experimental-test-module-mocks": true
-	}
+  "$schema": "https://nodejs.org/dist/v24.18.0/docs/node-config-schema.json",
+  "nodeOptions": {
+    "warnings": false
+  },
+  "testRunner": {
+    "experimental-test-module-mocks": true,
+    "experimental-test-coverage": true,
+    "test-coverage-include": [
+      "src/**/*.ts"
+    ],
+    "test-coverage-exclude": [
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ],
+    "test-reporter": [
+      "lcov",
+      "spec"
+    ],
+    "test-reporter-destination": [
+      "./coverage.lcov",
+      "stdout"
+    ]
+  }
 }
