@@ -11,7 +11,7 @@ export function composeBuildMetadata(outputs: Metafile['outputs'], buildConfig: 
 	const isModule = buildConfig.format === 'esm';
 
 	for (const file of Object.keys(outputs)) {
-		const relUrl = file.replace('dist', '');
+		const relUrl = file.replace('docs', '');
 		switch (file.split('.').at(-1)) {
 			case 'css': assets.css.push(relUrl); break;
 			case 'ico': assets.favicon = relUrl; break;

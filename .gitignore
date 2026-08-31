@@ -3,3 +3,4 @@ key.pem
 coverage.lcov
 tsconfig.tsbuildinfo
 !icons/
+docs/

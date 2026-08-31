@@ -7,7 +7,7 @@ import { compileIndexEJSPlugin } from './compile-index-ejs.ts';
 import { compileWebmanifestPlugin } from './compile-webmanifest.ts';
 import { compileServiceWorkerPlugin } from './compile-serviceworker.ts';
 
-export const outdir = fileURLToPath(import.meta.resolve('../dist'));
+export const outdir = fileURLToPath(import.meta.resolve('../docs'));
 
 export const config: BuildOptions = {
 	bundle: true,
