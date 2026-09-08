@@ -1,4 +1,7 @@
-export const data = {
+export const cards = {
+	get count() {
+		return localStorage.length;
+	},
 	delete(key: CardId) {
 		localStorage.removeItem(key);
 	},
@@ -18,7 +21,7 @@ export const data = {
 	},
 };
 
-export type CardsCollection = ReturnType<typeof data['getAll']>;
+export type CardsCollection = ReturnType<typeof cards['getAll']>;
 export type CardId = string;
 export type CardData = {
 	barcode: string,

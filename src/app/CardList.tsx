@@ -3,16 +3,16 @@ import { useRoute } from 'preact-iso';
 import NoCard from '@tabler/icons/outline/id-off.svg';
 
 import { composeMerchantSlug } from './merchant-info.ts';
-import { data, type CardData, type CardId } from './storage/data.ts';
+import { cards, type CardData, type CardId } from './storage/cards.ts';
 import { media } from './storage/media.ts';
 
 import styles from './CardList.module.css';
 
 export default function CardList() {
 	const { query: { search } } = useRoute();
-	const allCards = Array.from(data.getAll());
+	const allCards = Array.from(cards.getAll());
 	const fuzzy = useMemo(() => new RegExp(`.*${search}.*`, 'i'), [search]);
-	const cards = allCards
+	const sortedCards = allCards
 		? allCards
 			.filter(({ 1: { label } }) => search ? fuzzy.test(label) : true)
 			.sort(({ 1: a }, { 1: b }) => {
@@ -23,10 +23,10 @@ export default function CardList() {
 		: [];
 
 	return (
-		<main className="container margin-end-space margin-start-space">
-			<section className="callout grid-auto fill primary padding-m">
-				{cards?.length
-					? cards.map(([id, data]) => (<Card id={id} {...data} />))
+		<main className="container margin-end-space margin-start-space padding-m">
+			<section className="callout grid-auto fill primary">
+				{sortedCards?.length
+					? sortedCards.map(([id, data]) => (<Card id={id} {...data} />))
 					: <NoCards search={search} />
 				}
 			</section>

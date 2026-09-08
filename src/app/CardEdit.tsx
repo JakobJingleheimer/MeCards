@@ -9,7 +9,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useLocation, useRoute } from 'preact-iso';
 
 import { generateBarcode } from './generate-barcode.ts';
-import { data, type CardData } from './storage/data.ts';
+import { cards, type CardData } from './storage/cards.ts';
 import { media } from './storage/media.ts';
 import { useToaster } from './toaster/context.tsx';
 import { composeMerchantSlug, retrieveMerchantLogo } from './merchant-info.ts';
@@ -24,7 +24,7 @@ export default function CardEdit() {
 	const [card] = useState(
 		isNew
 		? {} as CardData
-		: data.get(id) ?? {} as CardData
+		: cards.get(id) ?? {} as CardData
 	);
 	const [disabled, setDisabled] = useState<boolean>();
 	const [logo, setLogo] = useState<URL['href']>();
@@ -60,7 +60,7 @@ export default function CardEdit() {
 	}, [card.label]);
 
 	const handleDelete: GenericEventHandler<HTMLButtonElement> = () => {
-		data.delete(id);
+		cards.delete(id);
 		media.remove(`${id}.svg`, 'card');
 		route('/');
 		push({
@@ -87,7 +87,7 @@ export default function CardEdit() {
 
 		if (id === 'new') id = nanoid(6);
 
-		data.set(id, {
+		cards.set(id, {
 			barcode,
 			label,
 			notes,
