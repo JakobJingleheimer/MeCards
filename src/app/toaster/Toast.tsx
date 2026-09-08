@@ -1,13 +1,5 @@
-import CheckCircleIcon from '@tabler/icons/outline/circle-check.svg';
-import ExclamationCircleIcon from '@tabler/icons/outline/exclamation-circle.svg';
-import InformationCircleIcon from '@tabler/icons/outline/info-circle.svg';
-import Spinner from '@tabler/icons/outline/loader-4.svg';
-import XCircleIcon from '@tabler/icons/outline/circle-x.svg';
 import XMarkIcon from '@tabler/icons/outline/x.svg';
 import { clsx } from 'clsx';
-import {
-  type ComponentType,
-} from 'preact/compat';
 import {
   useCallback,
   useEffect,
@@ -16,7 +8,7 @@ import {
   useState,
 } from 'preact/hooks';
 
-import type { ToastKind, Toast as ToastType } from './index.d.ts';
+import type { Toast as ToastType } from './index.d.ts';
 import { useToaster } from './context.tsx';
 
 
@@ -25,24 +17,12 @@ type ToastProps = {
   removeImmediately?: boolean;
 };
 
-const iconMap = {
-  danger: XCircleIcon,
-  info: InformationCircleIcon,
-  pending: Spinner,
-  primary: InformationCircleIcon,
-  secondary: InformationCircleIcon,
-  success: CheckCircleIcon,
-  warning: ExclamationCircleIcon,
-} as const satisfies Record<ToastKind, ComponentType>;
-
 export default function Toast({ toast, removeImmediately = false }: ToastProps) {
   const { remove } = useToaster();
   const [isPaused, setIsPaused] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const remainingMsRef = useRef(toast.duration);
   const startedAtRef = useRef(0);
-
-  const Icon = iconMap[toast.kind];
 
   const clearRunning = useCallback(() => {
     if (timeoutRef.current) {
@@ -119,7 +99,7 @@ export default function Toast({ toast, removeImmediately = false }: ToastProps) 
     <li
       aria-atomic="true"
       aria-live="polite"
-      className={clsx('align-center callout sidecar toast', toast.kind)}
+      className={clsx('align-start callout sidecar toast', toast.kind)}
       key={toast.id}
       onBlurCapture={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
@@ -127,27 +107,25 @@ export default function Toast({ toast, removeImmediately = false }: ToastProps) 
       onMouseLeave={() => setIsPaused(false)}
       role="status"
     >
-      <Icon aria-hidden="true" />
+      {showDismiss && (
+        <button
+          aria-heading="dismiss toast"
+          className="padding-6xs plain"
+          onClick={handleDismiss}
+          type="button"
+        >
+          <XMarkIcon />
+        </button>
+      )}
 
       <div>
         {toast.heading && (
           <header className="action-header">
             <h1 className="h2">{toast.heading}</h1>
-
-            {showDismiss && (
-              <button
-                aria-heading="dismiss toast"
-                className="-margin-6xs padding-6xs plain"
-                onClick={handleDismiss}
-                type="button"
-              >
-                <XMarkIcon />
-              </button>
-            )}
           </header>
         )}
 
-        <p>{message}</p>
+        {typeof message === 'string' ? (<p>{message}</p>) : message}
 
         {toast.ctas?.length && (
           <div className="split">
