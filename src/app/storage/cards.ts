@@ -1,4 +1,9 @@
 export const cards = {
+	clear() {
+		const keys = Object.keys(localStorage);
+		localStorage.clear();
+		return keys;
+	},
 	get count() {
 		return localStorage.length;
 	},
