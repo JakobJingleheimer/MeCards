@@ -15,8 +15,10 @@
 	.toaster[popover] {
 		background-color: unset;
 		border: unset;
-		left: auto;
+		left: var(--size-2xs);
 		margin: var(--size-5xs);
+		margin-left: auto;
+		max-width: 18em;
 		padding: unset;
 		right: var(--size-2xs);
 		top: var(--size-m);
