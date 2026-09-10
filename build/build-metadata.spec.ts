@@ -7,38 +7,43 @@ import { config } from './config.ts';
 
 
 describe('Compose Build Meta', { concurrency: true }, () => {
-	it('should find stylesheets', () => {
-		const assets = composeBuildMetadata(metafile.outputs, config);
+	it('should find assets', (t) => {
+		const { assets } = composeBuildMetadata(metafile.outputs, config);
 
-		assert.partialDeepStrictEqual(assets.css, [
-			'/app/main.css',
-		]);
+		t.test('stylesheets', () => {
+			assert.partialDeepStrictEqual(assets.css, ['/app/main.css']);
+		});
+
+		t.test('favicon', () => {
+			assert.equal(assets.favicon, '/app/favicon.ico');
+		});
+
+		t.test('scripts, ignoring service-worker files that are NOT "register"', () => {
+			assert.partialDeepStrictEqual(assets.scripts, [
+				{
+					isModule: true,
+					src: '/sw/register.js',
+				},
+				{
+					isModule: true,
+					src: '/app/main.js',
+				},
+			]);
+		});
+
+		t.test('web manifest', () => {
+			assert.equal(assets.webmanifest, '/webmanifest/app.webmanifest');
+		});
 	});
+	it('should include meta', (t) => {
+		const { meta } = composeBuildMetadata(metafile.outputs, config);
 
-	it('should find a favicon', () => {
-		const assets = composeBuildMetadata(metafile.outputs, config);
+		t.test('description', () => {
+			assert.ok(meta.description);
+		});
 
-		assert.partialDeepStrictEqual(assets.favicon, '/app/favicon.ico');
-	});
-
-	it('should find scripts, ignoring service-worker files that are NOT "register"', () => {
-		const assets = composeBuildMetadata(metafile.outputs, config);
-
-		assert.partialDeepStrictEqual(assets.scripts, [
-			{
-				isModule: true,
-				src: '/sw/register.js',
-			},
-			{
-				isModule: true,
-				src: '/app/main.js',
-			},
-		]);
-	});
-
-	it('should find a web manifest', () => {
-		const assets = composeBuildMetadata(metafile.outputs, config);
-
-		assert.partialDeepStrictEqual(assets.webmanifest, '/webmanifest/app.webmanifest');
+		t.test('name', () => {
+			assert.ok(meta.name);
+		});
 	});
 });

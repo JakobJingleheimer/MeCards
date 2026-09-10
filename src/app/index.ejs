@@ -7,7 +7,7 @@
 
 		<% if (assets.webmanifest) { %>
 			<link rel="manifest" href="<%= assets.webmanifest %>" />
-			<% } %>
+		<% } %>
 		<% if (assets.favicon) { %>
 			<link rel="apple-touch-icon" href="<%= assets.favicon %>" />
 			<link rel="icon" href="<%= assets.favicon %>" />
@@ -19,7 +19,19 @@
 			<script src="<%= src %>" type="module"></script>
 		<% } %>
 
-		<title>MeCards</title>
+		<% if (meta.description) { %>
+			<meta name="description" content="<%= meta.description %>" />
+			<meta property="og:description" content="<%= meta.description %>">
+		<% } %>
+
+		<% if (assets.ogImage) { %>
+			<meta property="og:image" content="<%= assets.ogImage %>">
+		<% } %>
+
+		<meta property="og:title" content="<%= meta.name %>">
+		<meta property="og:type" content="website">
+
+		<title><%= meta.name %></title>
 	</head>
 
 	<body class="flex direction-column">

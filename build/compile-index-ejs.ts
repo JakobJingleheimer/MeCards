@@ -68,12 +68,13 @@ export const compileIndexEJSPlugin = (
 
 		onEnd(async ({ metafile, outputFiles }) => {
 			const tmpl = await readFile(inPath, 'utf8');
-			const assets = composeBuildMetadata(metafile?.outputs!, buildConfig);
+			const { assets, meta } = composeBuildMetadata(metafile?.outputs!, buildConfig);
 
 			const compiledHTML = ejs.render(tmpl, {
 				assets,
 				env,
 				hot,
+				meta,
 			});
 
 			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;

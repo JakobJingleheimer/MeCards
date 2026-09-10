@@ -12,7 +12,9 @@ export const outdir = fileURLToPath(import.meta.resolve('../docs'));
 export const config: BuildOptions = {
 	bundle: true,
 	entryPoints: [
+		// TODO: switch to { [key]: path } ?
 		fileURLToPath(import.meta.resolve('../src/app/favicon.ico')),
+		fileURLToPath(import.meta.resolve('../src/app/og.png')),
 		fileURLToPath(import.meta.resolve('../src/sw/main.ts')),
 		fileURLToPath(import.meta.resolve('../src/sw/register.ts')),
 		fileURLToPath(import.meta.resolve('../src/app/main.tsx')),
