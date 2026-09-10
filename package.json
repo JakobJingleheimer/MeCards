@@ -1,7 +1,7 @@
 {
   "name": "MeCards",
   "version": "1.0.0-rc.1",
-  "description": "Store membership and points cards persistently. This PWA must be installed for persistent storage to be allowed by the device.",
+  "description": "Store membership cards offline, locally on your device; no sketchy shit.",
   "keywords": [
     "barcodes",
     "persistent storage",
@@ -54,6 +54,7 @@
     "esbuild": "^0.25.12",
     "esbuild-plugin-svgr": "^3.1.1",
     "mime-types": "^3.0.2",
+    "type-fest": "^5.9.0",
     "typescript": "^7.0.2"
   },
   "optionalDependencies": {

@@ -1,5 +1,7 @@
 import type { WebAppManifest } from 'web-app-manifest';
 
+import pjson from '../../package.json' with { type: 'json' };
+
 import icon192p from './icons/192p.png';
 import icon192m from './icons/192m.png';
 import icon512p from './icons/512p.png';
@@ -11,9 +13,10 @@ import screenDesktopList from './screenshots/screen-list-desktop.png';
 import screenMobileList from './screenshots/screen-list-mobile.png';
 
 export default {
-	name: 'MeCards',
+	name: pjson.name,
 	background_color: '#1C9AF3',
 	theme_color: '#1C9AF3',
+	description: pjson.description,
 	display: 'standalone',
 	display_override: [
 		'standalone',
