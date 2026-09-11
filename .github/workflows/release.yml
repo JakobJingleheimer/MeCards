@@ -32,15 +32,18 @@ jobs:
       - name: Clean install dependencies
         run: npm ci
 
-      - name: Run build
+      - name: Create prod build
         run: node --run build:prod
 
       - name: Commit to GH Pages branch
         env:
           VERSION: ${{ github.event.release.tag_name }}
         run: |
+          git add -f ./docs
+          git stash save 'prod build'
           git fetch origin prod
           git checkout prod
+          git cherry-pick -n -m1 -Xtheirs stash@{0}
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f ./docs
