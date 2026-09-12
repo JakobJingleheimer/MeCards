@@ -23,7 +23,7 @@ const Install = () => {
 			kind: 'danger',
 			message: (
 				<>
-					<p>Using MeCards without first installing will likely result in data-loss. Please install the app before using.</p>
+					<p>Please install MeCards before using it; using without installing will likely result in data-loss.</p>
 
 					<Instructions />
 				</>
