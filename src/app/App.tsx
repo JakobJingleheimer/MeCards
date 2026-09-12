@@ -11,7 +11,7 @@ import './kelpui.css';
 import './App.module.css';
 
 import Install from './Prerequisites/Install.tsx';
-import { Footer } from './Footer.tsx';
+import { AppNav } from './AppNav.tsx';
 import { ToasterProvider } from './toaster/context.tsx';
 import Toaster from './toaster/Toaster.tsx';
 
@@ -34,7 +34,7 @@ export function App() {
 						<Route path="/card/:id" component={({ path }) => <CardEdit key={path} />} />
 					</Router>
 
-					<Footer />
+					<AppNav />
 				</ToasterProvider>
 			</ErrorBoundary>
 		</LocationProvider>

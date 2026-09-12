@@ -1,0 +1,6 @@
+.AppNav {
+	padding-bottom: var(--size-4xs);
+	padding-left: var(--size-m);
+	padding-right: var(--size-m);
+	padding-top: var(--size-4xs);
+}

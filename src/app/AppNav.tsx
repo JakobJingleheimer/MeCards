@@ -1,3 +1,4 @@
+import { clsx } from 'clsx';
 import debounce from 'lodash.debounce';
 import type { ChangeEvent } from 'preact/compat';
 import { useMemo } from 'preact/hooks';
@@ -8,7 +9,9 @@ import Info from '@tabler/icons/outline/info-circle.svg';
 import SearchList from '@tabler/icons/outline/list-search.svg';
 import Wallet from '@tabler/icons/outline/wallet.svg';
 
-export function Footer() {
+import styles from './AppNav.module.css';
+
+export function AppNav() {
 	const { path, query: { search }, route } = useLocation();
 
 	const handleSearch = useMemo(
@@ -20,7 +23,7 @@ export function Footer() {
 	);
 
 	return (
-		<footer className="flex gap-m justify-center padding-4xs">
+		<footer className={clsx(styles.AppNav, 'flex gap-m justify-center')}>
 			{path !== '/about' && (<a className="flex-inline" href="/about">
 				<Info className="size-5xl" />
 			</a>)}
