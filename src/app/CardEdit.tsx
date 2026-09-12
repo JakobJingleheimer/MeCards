@@ -185,7 +185,7 @@ export default function CardEdit() {
 
 				<p>This cannot be undone (you'll need to re-create the card).</p>
 
-				<div className="flex justify-end">
+				<div className="flex justify-center">
 					<button
 						className="danger"
 						command="request-close"

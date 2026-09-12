@@ -95,7 +95,7 @@ export default function About() {
 
 				<p>This cannot be undone (you'll need to re-create each card).</p>
 
-				<div className="flex justify-end">
+				<div className="flex justify-center">
 					<button
 						className="danger"
 						command="request-close"
