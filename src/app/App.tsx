@@ -8,7 +8,6 @@ import {
 import 'kelpui/css/kelp.css';
 
 import './kelpui.css';
-import './App.module.css';
 
 import Install from './Prerequisites/Install.tsx';
 import { AppNav } from './AppNav.tsx';

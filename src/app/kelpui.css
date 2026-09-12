@@ -7,9 +7,55 @@
 }
 
 @layer kelp.extend {
+	html {
+		display: block;
+	}
+
+	html,
+	body {
+		height: 100%;
+	}
+
 	dialog .action-header {
 		flex-wrap: wrap;
 		margin-bottom: var(--size-2xl);
+	}
+
+	img,
+	svg {
+		&[class*=size-] {
+			width: var(--font-size);
+		}
+	}
+
+	main {
+		align-content: end;
+		flex: 1;
+		overflow-y: auto;
+	}
+
+	input,
+	select,
+	textarea {
+		&:focus,
+		&:hover {
+			background-color: var(--color-blue-base);
+			color: var(--color-background);
+
+			&::placeholder {
+				color: var(--color-blue-90);
+			}
+		}
+
+		&:not(:focus) {
+			border-color: transparent;
+		}
+	}
+
+	textarea {
+		--height: 3ch;
+
+		resize: none;
 	}
 
 	.toaster[popover] {

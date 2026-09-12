@@ -1,4 +1,6 @@
 .AppNav {
+	box-shadow: 0 calc(-1 * var(--size-5xs)) var(--size-5xs) var(--color-gray-90);
+
 	padding-bottom: var(--size-4xs);
 	padding-left: var(--size-m);
 	padding-right: var(--size-m);
