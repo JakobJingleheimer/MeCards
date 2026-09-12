@@ -191,7 +191,7 @@ export default function CardEdit() {
 						command="request-close"
 						commandFor={CONFIRM_MODAL_ID}
 						onClick={handleDelete}
-					>Yes, delete it</button>
+					>Delete it</button>
 				</div>
 			</dialog>
 		</main>

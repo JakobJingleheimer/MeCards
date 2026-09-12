@@ -1,6 +1,7 @@
 import XMarkIcon from '@tabler/icons/outline/x.svg';
 import type { GenericEventHandler } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
+import Trash from '@tabler/icons/outline/trash.svg';
 
 import pjson from '../../package.json' with { type: 'json' };
 import { hasPersistedStorage, isInstalled } from './Prerequisites/checks.ts';
@@ -66,7 +67,9 @@ export default function About() {
 									command="show-modal"
 									commandFor={CONFIRM_MODAL_ID}
 									type="button"
-								>Remove all</button>
+								>
+									<Trash className="size-5xl" />
+								</button>
 							)}
 						</td>
 					</tr>
@@ -78,7 +81,7 @@ export default function About() {
 				id={CONFIRM_MODAL_ID}
 			>
 				<header className="action-header">
-					<h1>Delete ALL card?</h1>
+					<h1>Delete <em>all</em> card?</h1>
 
 					<button
 						aria-label="cancel"
@@ -98,7 +101,7 @@ export default function About() {
 						command="request-close"
 						commandFor={CONFIRM_MODAL_ID}
 						onClick={handleRemoveAllCards}
-					>Yes, delete them</button>
+					>Delete everything</button>
 				</div>
 			</dialog>
 
