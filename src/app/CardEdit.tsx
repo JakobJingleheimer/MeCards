@@ -108,14 +108,19 @@ export default function CardEdit() {
 			<header className="flex split">
 				<a className="btn link" href="/"><ArrowLeft /> Back to list</a>
 
-				<button
-					className="danger plain size-3xs"
-					command="show-modal"
-					commandFor={CONFIRM_MODAL_ID}
-					type="button"
-				>
-					<Trash className="size-5xl" />
-				</button>
+				{isNew
+				? (<span />)
+				: (
+						<button
+							className="danger plain size-3xs"
+							command="show-modal"
+							commandFor={CONFIRM_MODAL_ID}
+							type="button"
+						>
+							<Trash className="size-5xl" />
+						</button>
+					)
+				}
 			</header>
 
 			<form
