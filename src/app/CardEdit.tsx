@@ -1,3 +1,5 @@
+import ArrowLeft from '@tabler/icons/outline/arrow-left.svg';
+import Trash from '@tabler/icons/outline/trash.svg';
 import XMarkIcon from '@tabler/icons/outline/x.svg';
 import { nanoid } from 'nanoid/non-secure';
 import type {
@@ -103,6 +105,19 @@ export default function CardEdit() {
 
 	return (
 		<main className="padding-m">
+			<header className="flex split">
+				<a className="btn link" href="/"><ArrowLeft /> Back to list</a>
+
+				<button
+					className="danger plain size-3xs"
+					command="show-modal"
+					commandFor={CONFIRM_MODAL_ID}
+					type="button"
+				>
+					<Trash className="size-5xl" />
+				</button>
+			</header>
+
 			<form
 				className="align-center container stack"
 				id={FORM_ID}
@@ -150,12 +165,7 @@ export default function CardEdit() {
 				<div className="split">
 					{isNew
 						? <button type="reset">Reset</button>
-						: <button
-								className="danger"
-								command="show-modal"
-								commandFor={CONFIRM_MODAL_ID}
-								type="button"
-							>Delete</button>
+						: <a className="btn neutral" href="/">Cancel</a>
 					}
 
 					<button
