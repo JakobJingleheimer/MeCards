@@ -3,9 +3,9 @@ import type { ChangeEvent } from 'preact/compat';
 import { useMemo } from 'preact/hooks';
 import { useLocation } from 'preact-iso';
 
+import AddNew from '@tabler/icons/outline/square-plus.svg';
 import Info from '@tabler/icons/outline/info-circle.svg';
 import SearchList from '@tabler/icons/outline/list-search.svg';
-import Scan from '@tabler/icons/outline/scan.svg';
 import Wallet from '@tabler/icons/outline/wallet.svg';
 
 export function Footer() {
@@ -21,31 +21,34 @@ export function Footer() {
 
 	return (
 		<footer className="flex gap-m justify-center padding-4xs">
-			<a className="flex-inline" href="/about">
+			{path !== '/about' && (<a className="flex-inline" href="/about">
 				<Info className="size-5xl" />
-			</a>
+			</a>)}
 
-			{path === '/' && (
-				<label className="flex gap-m">
-					<SearchList aria-label="search cards" className="size-5xl" />
+			{path === '/'
+				? (
+					<label className="flex gap-m">
+						<SearchList aria-label="search cards" className="size-5xl" />
 
-					<input
-						className="margin-start-0"
-						defaultValue={search}
-						name="search-cards"
-						onChange={handleSearch}
-						type="search"
-					/>
-				</label>
-			)}
+						<input
+							className="margin-start-0"
+							defaultValue={search}
+							name="search-cards"
+							onChange={handleSearch}
+							type="search"
+						/>
+					</label>
+				)
+				: (
+					<a className="flex-inline" href="/">
+						<Wallet className="size-5xl" />
+					</a>
+				)
+			}
 
-			<a className="flex-inline" href="/">
-				<Wallet className="size-5xl" />
-			</a>
-
-			<a className="flex-inline" href="/card/new">
-				<Scan className="size-5xl" />
-			</a>
+			{!path.startsWith('/card') && (<a className="flex-inline" href="/card/new">
+				<AddNew className="size-5xl" />
+			</a>)}
 		</footer>
 	);
 }
