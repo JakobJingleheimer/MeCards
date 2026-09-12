@@ -2,6 +2,9 @@ import type { FunctionComponent } from 'preact';
 import { useEffect } from 'preact/hooks';
 
 import AddBoxedIcon from '@tabler/icons/outline/square-plus.svg';
+import DesktopDeviceDownload from '@tabler/icons/outline/device-desktop-down.svg';
+import DotsMenuVertical from '@tabler/icons/outline/dots-vertical.svg';
+import MobileDeviceDownload from '@tabler/icons/outline/device-mobile-down.svg';
 import MobileHomeScreenIcon from '@tabler/icons/outline/device-mobile.svg';
 import ShareMenuIcon from '@tabler/icons/outline/share-2.svg';
 
@@ -37,6 +40,23 @@ export default Install;
 const AndroidInstructions = () => (
 	<details>
 		<summary>Instructions for Android</summary>
+
+		<h1 className="h5">Brave & Chrome</h1>
+		<ol>
+			<li><MobileDeviceDownload className="size-m" />Tap <em>Install</em></li>
+		</ol>
+
+		<h1 className="h5">Chromium</h1>
+		<ol>
+			<li><DotsMenuVertical className="size-m" /> Open the settings menu</li>
+			<li>Tap <em>Install</em></li>
+		</ol>
+
+		<h1 className="h5">Firefox</h1>
+		<ol>
+			<li><DotsMenuVertical className="size-m" /> Open the settings menu</li>
+			<li>Tap <em>Add to Home Screen</em></li>
+		</ol>
 	</details>
 );
 
@@ -53,7 +73,15 @@ const iOSInstructions = () => (
 	</details>
 );
 
-const Unknown = () => (<p>Could not determine device operating system</p>);
+const Unknown = () => (
+	<details>
+		<summary>Instructions for Desktop</summary>
+
+		<ol>
+			<li>Tap <DesktopDeviceDownload /> (in the address/url bar)</li>
+		</ol>
+	</details>
+);
 
 const WindowsInstructions = () => (
 	<details>
