@@ -23,7 +23,7 @@ export default function CardList() {
 		: [];
 
 	return (
-		<main className="container margin-end-space margin-start-space padding-m">
+		<main className="container padding-m">
 			<section className="callout grid-auto fill primary">
 				{sortedCards?.length
 					? sortedCards.map(([id, data]) => (<Card id={id} {...data} />))
@@ -34,12 +34,12 @@ export default function CardList() {
 	)
 }
 
-const Card = ({ label, id }: CardData & { id: CardId }) => (
+const Card = ({ barcode, label, id }: CardData & { id: CardId }) => (
 	<a className="callout neutral" href={`/card/${id}`}>
 		<figure className="align-center direction-column flex">
 			<img className={styles.CardListIcon} src={media.composeUrlPath(`${composeMerchantSlug(label)}.svg`, 'logo')} />
 
-			<figcaption>{label}</figcaption>
+			<figcaption>{label} ({barcode.slice(-4)})</figcaption>
 		</figure>
 	</a>
 );
