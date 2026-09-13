@@ -65,7 +65,14 @@ export default function CardEdit() {
 	}, [card.label]);
 
 	useEffect(() => {
-		if (!isNew) media.createTmpUrl(`${id}.svg`, 'card').then(setBarcodeSrc);
+		if (!isNew) media.createTmpUrl(`${id}.svg`, 'card')
+			.then(setBarcodeSrc)
+			.catch((err) => push({
+				kind: 'warning',
+				heading: 'No barcode found',
+				message: err.message,
+			}));
+
 		return () => URL.revokeObjectURL(barcodeSrc);
 	}, []);
 
