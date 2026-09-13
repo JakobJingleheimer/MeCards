@@ -2,9 +2,9 @@ import { useMemo } from 'preact/hooks';
 import { useRoute } from 'preact-iso';
 import NoCard from '@tabler/icons/outline/id-off.svg';
 
+import { cards, type CardData, type CardId } from '../storage/cards.ts';
+import { media } from '../storage/media.ts';
 import { composeMerchantSlug } from './merchant-info.ts';
-import { cards, type CardData, type CardId } from './storage/cards.ts';
-import { media } from './storage/media.ts';
 
 import styles from './CardList.module.css';
 

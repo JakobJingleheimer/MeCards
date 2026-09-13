@@ -7,16 +7,16 @@ import {
 } from 'preact-iso';
 import 'kelpui/css/kelp.css';
 
-import './kelpui.css';
+import '../kelpui.css';
 
-import Install from './Prerequisites/Install.tsx';
 import { AppNav } from './AppNav.tsx';
-import { ToasterProvider } from './toaster/context.tsx';
-import Toaster from './toaster/Toaster.tsx';
+import Install from '../Prerequisites/Install.tsx';
+import { ToasterProvider } from '../toaster/context.tsx';
+import Toaster from '../toaster/Toaster.tsx';
 
-const About = lazy(() => import('./About.tsx'));
-const CardEdit = lazy(() => import('./CardEdit.tsx'));
-const CardList = lazy(() => import('./CardList.tsx'));
+const About = lazy(() => import('../About.tsx'));
+const CardEdit = lazy(() => import('../card/CardEdit.tsx'));
+const CardList = lazy(() => import('../card/CardList.tsx'));
 
 export function App() {
 	return (

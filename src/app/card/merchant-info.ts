@@ -1,4 +1,4 @@
-import { media } from './storage/media.ts';
+import { media } from '../storage/media.ts';
 
 export async function retrieveMerchantLogo(merchantName: string) {
 	if (await media.find(merchantName, 'logo')) return;

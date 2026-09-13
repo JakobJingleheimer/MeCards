@@ -10,10 +10,10 @@ import type {
 import { useEffect, useState } from 'preact/hooks';
 import { useLocation, useRoute } from 'preact-iso';
 
+import { cards, type CardData } from '../storage/cards.ts';
+import { media } from '../storage/media.ts';
+import { useToaster } from '../toaster/context.tsx';
 import { generateBarcode } from './generate-barcode.ts';
-import { cards, type CardData } from './storage/cards.ts';
-import { media } from './storage/media.ts';
-import { useToaster } from './toaster/context.tsx';
 import { composeMerchantSlug, retrieveMerchantLogo } from './merchant-info.ts';
 
 
