@@ -16,7 +16,7 @@ export function AppNav() {
 
 	const handleSearch = useMemo(
 		() => debounce(
-			({ currentTarget: { value } }: ChangeEvent<HTMLInputElement>) => route(`/?search=${value}`),
+			(value: ChangeEvent<HTMLInputElement>['currentTarget']['value']) => route(`/?search=${value}`),
 			300,
 		),
 		[],
@@ -37,7 +37,7 @@ export function AppNav() {
 							className="margin-start-0"
 							defaultValue={search}
 							name="search-cards"
-							onChange={handleSearch}
+							onChange={(e) => handleSearch(e.currentTarget.value)}
 							type="search"
 						/>
 					</label>
