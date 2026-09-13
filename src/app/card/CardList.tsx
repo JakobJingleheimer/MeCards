@@ -37,7 +37,7 @@ export default function CardList() {
 const Card = ({ label, id }: CardData & { id: CardId }) => (
 	<a className="callout neutral" href={`/card/${id}`}>
 		<figure className="align-center direction-column flex">
-			<img className={styles.CardListIcon} src={media.composeUrl(`${composeMerchantSlug(label)}.svg`, 'logo')} />
+			<img className={styles.CardListIcon} src={media.composeUrlPath(`${composeMerchantSlug(label)}.svg`, 'logo')} />
 
 			<figcaption>{label}</figcaption>
 		</figure>
