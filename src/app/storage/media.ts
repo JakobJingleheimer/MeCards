@@ -1,10 +1,23 @@
 export const media = {
-	composeUrl(filename: string, type: MediaType) {
+	composeUrlPath(filename: string, type: MediaType) {
 		return `/${MEDIA_TYPE_TO_COLLECTION[type]}/${filename}`;
 	},
-	async find(filename: File['name'], type: MediaType) {
+	async createTmpUrl(filename: string, type: MediaType, previousUrl?: string) {
+		const newKey = this.composeUrlPath(filename, type);
+		const cached = await caches
+			.open(CACHE_NAME) // Should this be kept open?
+			.then((cache) => cache.match(newKey));
+
+		if (!cached) throw new Error(`No cached item for ${newKey}`);
+
+		const tmpUrl = URL.createObjectURL(await cached.blob());
+		if (previousUrl) URL.revokeObjectURL(previousUrl);
+
+		return tmpUrl;
+	},
+	async find(filename: File['name'], type?: MediaType) {
 		const key = type
-			? media.composeUrl(filename, type)
+			? this.composeUrlPath(filename, type)
 			: filename;
 
 		return caches
@@ -14,7 +27,7 @@ export const media = {
 	},
 	async remove(filename: File['name'], type?: MediaType) {
 		const key = type
-			? media.composeUrl(filename, type)
+			? this.composeUrlPath(filename, type)
 			: filename;
 
 		return caches
@@ -25,7 +38,7 @@ export const media = {
 		return caches
 			.open(CACHE_NAME) // Should this be kept open?
 			.then(async (cache) => {
-				const key = media.composeUrl(file.name, type);
+				const key = this.composeUrlPath(file.name, type);
 
 				await cache.put(
 					key,

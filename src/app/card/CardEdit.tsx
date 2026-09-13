@@ -23,11 +23,14 @@ const ID_NEW = 'new';
 export default function CardEdit() {
 	let id = useRoute().params.id!;
 	const isNew = id === ID_NEW;
-	const [card] = useState(
+	const [card, setCard] = useState(
 		isNew
 		? {} as CardData
 		: cards.get(id) ?? {} as CardData
 	);
+	// This is necessary because of browser DOM caching:
+	// it refuses to re-render the image unless the `src` is actually different.
+	const [barcodeSrc, setBarcodeSrc] = useState<URL['href']>('');
 	const [disabled, setDisabled] = useState<boolean>();
 	const [logo, setLogo] = useState<URL['href']>();
 	const { route } = useLocation();
@@ -60,6 +63,18 @@ export default function CardEdit() {
 			.find(filename, 'logo')
 			.then((key) => key && setLogo(key));
 	}, [card.label]);
+
+	useEffect(() => {
+		if (!isNew) media.createTmpUrl(`${id}.svg`, 'card')
+			.then(setBarcodeSrc)
+			.catch((err) => push({
+				kind: 'warning',
+				heading: 'No barcode found',
+				message: err.message,
+			}));
+
+		return () => URL.revokeObjectURL(barcodeSrc);
+	}, []);
 
 	const handleDelete: GenericEventHandler<HTMLButtonElement> = () => {
 		cards.delete(id);
@@ -100,6 +115,19 @@ export default function CardEdit() {
 			'card',
 		);
 
+		setCard({
+			barcode,
+			label,
+			notes,
+		});
+		media.createTmpUrl(`${id}.svg`, 'card', barcodeSrc)
+			.then(setBarcodeSrc)
+			.catch((err) => push({
+				kind: 'warning',
+				heading: 'No barcode found',
+				message: err.message,
+			}));
+
 		route('/');
 	};
 
@@ -134,7 +162,7 @@ export default function CardEdit() {
 				<img
 					alt={card.barcode}
 					className="container"
-					src={isNew ? '' : media.composeUrl(`${id}.svg`, 'card')}
+					src={barcodeSrc}
 				/>
 
 				<label>
