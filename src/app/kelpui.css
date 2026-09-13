@@ -21,6 +21,10 @@
 		margin-bottom: var(--size-2xl);
 	}
 
+	figcaption {
+		font-style: unset;
+	}
+
 	img,
 	svg {
 		&[class*=size-] {
