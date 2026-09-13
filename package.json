@@ -11,9 +11,9 @@
   ],
   "homepage": "https://MeCards.app",
   "bugs": {
-    "url": "https://github.com/JakobJingleheimer/MeCards/issues"
+    "url": "https://github.com/MeCards/MeCards/issues"
   },
-  "repository": "github:JakobJingleheimer/MeCards",
+  "repository": "github:MeCards/MeCards",
   "license": "MIT",
   "author": "JakobJingleheimer",
   "type": "module",
