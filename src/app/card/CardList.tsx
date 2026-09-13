@@ -23,7 +23,7 @@ export default function CardList() {
 		: [];
 
 	return (
-		<main className="container margin-end-space margin-start-space padding-m">
+		<main className="container padding-m">
 			<section className="callout grid-auto fill primary">
 				{sortedCards?.length
 					? sortedCards.map(([id, data]) => (<Card id={id} {...data} />))
