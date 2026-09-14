@@ -8,7 +8,15 @@ import { config } from './config.ts';
 
 describe('Compose Build Meta', { concurrency: true }, () => {
 	it('should find assets', (t) => {
-		const { assets } = composeBuildMetadata(metafile.outputs, config);
+		// [1] A plugin adjusts the key IRL before this util runs, but not in this setup, so apply it manually.
+		const {
+			'docs/webmanifest/webmanifest.js': transWM, // [1]
+			...outputs
+		} = metafile.outputs;
+		const { assets } = composeBuildMetadata({
+			...outputs,
+			'docs/webmanifest/app.webmanifest': transWM, // [1]
+		}, config);
 
 		t.test('stylesheets', () => {
 			assert.partialDeepStrictEqual(assets.css, ['/app/main.css']);

@@ -57,7 +57,7 @@ const metafile = {
 			inputs: { 'src/app/index.ejs': { bytesInOutput: 1425 } },
 			bytes: 1425
 		},
-		'docs/webmanifest/app.webmanifest': {
+		'docs/webmanifest/webmanifest.js': {
 			imports: [],
 			exports: ['default'],
 			entryPoint: 'src/webmanifest/webmanifest.ts',
