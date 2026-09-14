@@ -32,7 +32,8 @@ const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encod
 const cwd = `${process.cwd()}${path.sep}`;
 
 const defaultFilename = 'webmanifest.ts';
-export const compileWebmanifestPlugin = (
+
+export const compileWebManifestPlugin = (
 	inName: FileName = defaultFilename,
 	outName: FileName = 'app.webmanifest',
 ): Plugin => ({
@@ -58,7 +59,13 @@ export const compileWebmanifestPlugin = (
 		const transPath = path.join(buildConfig.outdir!, inPfx, transName);
 		const outPath = path.join(buildConfig.outdir!, inPfx, outName);
 
-		onEnd(async ({ metafile, outputFiles }) => {
+		// must return for testing
+		return onEnd(async ({ metafile, outputFiles }) => {
+			// @ts-expect-error of course it doesn't exist…
+			metafile.outputs[outKey] = metafile?.outputs[inKey];
+
+			delete metafile?.outputs[inKey];
+
 			if (buildConfig.write) await handleFileOnDisk(
 				buildConfig,
 				outPath,
@@ -70,11 +77,6 @@ export const compileWebmanifestPlugin = (
 				transName,
 				outputFiles,
 			);
-
-			// @ts-expect-error
-			metafile.outputs[outKey] = metafile?.outputs[inKey];
-
-			delete metafile?.outputs[inKey];
 		});
 	},
 });
@@ -115,7 +117,10 @@ async function handleFileInMemory(
 	entry.path = outPath;
 }
 
-const compileJSON = (contents: string, buildConfig: BuildOptions) => import(`data:text/javascript;charset=utf-8,${encodeURIComponent(contents)}`)
+const compileJSON = (
+	contents: string,
+	buildConfig: BuildOptions,
+) => import(`data:text/javascript;charset=utf-8,${encodeURIComponent(contents)}`)
 	.then((m) => JSON.stringify(m.default, null, buildConfig.minify ? 0 : 2))
 	.catch((err) => {
 		if (
