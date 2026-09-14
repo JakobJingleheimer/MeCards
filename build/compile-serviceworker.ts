@@ -10,6 +10,7 @@ import {
 	type OutputFile,
 	type Plugin,
 } from 'esbuild';
+
 import {
 	getInPrefix,
 	getOutPrefix,
@@ -24,6 +25,7 @@ import { findEntrypoint } from './find-entrypoint.ts';
 const cwd = `${process.cwd()}${path.sep}`;
 
 const defaultFilename = 'main.ts';
+
 export const compileServiceWorkerPlugin = (
 	inName: FileName = defaultFilename,
 	outName: FileName = 'sw.js',
@@ -50,7 +52,8 @@ export const compileServiceWorkerPlugin = (
 		const transPath = path.join(buildConfig.outdir!, inPfx, transName);
 		const outPath = getRootPath(buildConfig.outdir, outName);
 
-		onEnd(async ({ metafile, outputFiles }) => {
+		// must return for testing
+		return onEnd(async ({ metafile, outputFiles }) => {
 			// @ts-expect-error
 			metafile.outputs[outKey] = metafile?.outputs[inKey];
 
