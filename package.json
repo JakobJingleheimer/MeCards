@@ -14,7 +14,7 @@
     "url": "https://github.com/MeCards/MeCards/issues"
   },
   "repository": "github:MeCards/MeCards",
-  "license": "MIT",
+  "license": "CC-BY-NC-4.0",
   "author": "JakobJingleheimer",
   "type": "module",
   "main": "./src/main.tsx",
