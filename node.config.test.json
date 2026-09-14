@@ -1,6 +1,9 @@
 {
   "$schema": "https://nodejs.org/dist/v24.18.0/docs/node-config-schema.json",
   "nodeOptions": {
+    "import": [
+      "./test/snapshots.ts"
+    ],
     "warnings": false
   },
   "testRunner": {
