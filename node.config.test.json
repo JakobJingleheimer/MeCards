@@ -1,9 +1,11 @@
 {
   "$schema": "https://nodejs.org/dist/v24.18.0/docs/node-config-schema.json",
   "nodeOptions": {
+    "experimental-webstorage": true,
     "import": [
       "./test/snapshots.ts"
     ],
+    "localstorage-file": "./test/.storage",
     "warnings": false
   },
   "testRunner": {
