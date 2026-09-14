@@ -35,11 +35,10 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 	const ejsTemplatePath = path.resolve(config.outdir!, 'app/index.ejs');
 	const outputPath = path.resolve(config.outdir!, 'index.html');
 
-	const decoder = new TextDecoder();
 	const outputFiles = [
 		{
 			contents: new Uint8Array(),
-			get text() { return 'do NOT use (can’t be cloned)' },
+			get text() { return 'replace me after cloning' },
 			hash: 'e1j2s3',
 			path: ejsTemplatePath,
 		},
@@ -89,7 +88,7 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 
 			const entry = o.find((item) => item.path === outputPath);
 
-			c.assert.snapshot(decoder.decode(entry!.contents));
+			c.assert.snapshot(entry!.text);
 
 			assert.ok(outKey in m.outputs, 'new metafile output key exists');
 			assert.ok(!(inKey in m.outputs), 'old metafile output key removed');

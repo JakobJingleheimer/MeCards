@@ -72,6 +72,11 @@ export const compileIndexEJSPlugin = (
 			const tmpl = await readFile(inPath, 'utf8');
 			const { assets, meta } = composeBuildMetadata(metafile?.outputs!, buildConfig);
 
+			// @ts-expect-error of course it doesn't exist…
+			metafile.outputs[outKey] = metafile?.outputs[inKey];
+
+			delete metafile?.outputs[inKey];
+
 			const compiledHTML = ejs.render(tmpl, {
 				assets,
 				env,
@@ -89,11 +94,6 @@ export const compileIndexEJSPlugin = (
 				inName,
 				outputFiles!,
 			);
-
-			// @ts-expect-error of course it doesn't exist…
-			metafile.outputs[outKey] = metafile?.outputs[inKey];
-
-			delete metafile?.outputs[inKey];
 		});
 	},
 });

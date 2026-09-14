@@ -54,7 +54,7 @@ export const compileServiceWorkerPlugin = (
 
 		// must return for testing
 		return onEnd(async ({ metafile, outputFiles }) => {
-			// @ts-expect-error
+			// @ts-expect-error of course it doesn't exist…
 			metafile.outputs[outKey] = metafile?.outputs[inKey];
 
 			delete metafile?.outputs[inKey];

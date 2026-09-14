@@ -18,6 +18,8 @@ export const setupOpts = {
 	esbuild: ({} as typeof esbuild),
 } satisfies Omit<PluginBuild, 'initialOptions' | 'onEnd'>;
 
+const decoder = new TextDecoder();
+
 type MetaFile = typeof metafile;
 
 export function onEndFactory<O extends OutputFile[]>(
@@ -40,7 +42,12 @@ export function onEndFactory(
 	o?: OutputFile[],
 	m = structuredClone(metafile),
 ) {
-	const outputFiles = o ? structuredClone(o) : o;
+	const outputFiles = o
+		? structuredClone(o).map((f) => ({
+			...f,
+			get text() { return decoder.decode(this.contents) },
+		} as OutputFile))
+		: o;
 	const onEnd = (
 		(
 			cb: (result: {

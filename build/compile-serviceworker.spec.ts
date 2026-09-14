@@ -45,12 +45,11 @@ describe('Compile ServiceWorker (esbuild plugin)', { concurrency: true }, async 
 	const swTransPath = path.resolve(config.outdir!, 'sw/main.js');
 	const outputPath = path.resolve(config.outdir!, 'sw.js');
 
-	const decoder = new TextDecoder();
 	const encoder = new TextEncoder();
 	const outputFiles = [
 		{
 			contents: encoder.encode(await readSwOrig()),
-			get text() { return 'do NOT use (can’t be cloned)' },
+			get text() { return 'replace me after cloning' },
 			hash: 's1w2k3',
 			path: swTransPath,
 		},
@@ -99,9 +98,8 @@ describe('Compile ServiceWorker (esbuild plugin)', { concurrency: true }, async 
 			});
 
 			const entry = o.find((item) => item.path === outputPath);
-			const text = decoder.decode(entry!.contents);
 
-			c.assert.snapshot(text);
+			c.assert.snapshot(entry!.text);
 
 			assert.ok(outKey in m.outputs, 'new metafile output key exists');
 			assert.ok(!(inKey in m.outputs), 'old metafile output key removed');
