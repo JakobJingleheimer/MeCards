@@ -35,6 +35,7 @@ const encodeUTF8 = (...args: Parameters<TextEncoder['encode']>) => encoder.encod
 const cwd = `${process.cwd()}${path.sep}`;
 
 const defaultFilename = 'index.ejs';
+
 export const compileIndexEJSPlugin = (
 	inName: FileName = defaultFilename,
 	{
@@ -66,7 +67,8 @@ export const compileIndexEJSPlugin = (
 		const outKey = getOutKey(outPfx, outName);
 		const outPath = getRootPath(buildConfig.outdir, outName);
 
-		onEnd(async ({ metafile, outputFiles }) => {
+		// must return for testing
+		return onEnd(async ({ metafile, outputFiles }) => {
 			const tmpl = await readFile(inPath, 'utf8');
 			const { assets, meta } = composeBuildMetadata(metafile?.outputs!, buildConfig);
 
@@ -75,6 +77,8 @@ export const compileIndexEJSPlugin = (
 				env,
 				hot,
 				meta,
+			}, {
+				rmWhitespace: true,
 			});
 
 			const handler = buildConfig.write ? handleFileOnDisk : handleFileInMemory;
@@ -86,7 +90,7 @@ export const compileIndexEJSPlugin = (
 				outputFiles!,
 			);
 
-			// @ts-expect-error
+			// @ts-expect-error of course it doesn't exist…
 			metafile.outputs[outKey] = metafile?.outputs[inKey];
 
 			delete metafile?.outputs[inKey];
