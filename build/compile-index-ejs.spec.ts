@@ -4,29 +4,17 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type {
-	default as esbuild,
 	BuildOptions,
 	OutputFile,
 	PluginBuild,
 } from 'esbuild';
 
-import metafile from './metafile.fixt.ts';
+import { onEndFactory, setupOpts } from './plugin.fixt.ts';
 
 
 describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () => {
 	const mock_fsRename = mock.fn(async () => {});
 	const mock_fsWriteFile = mock.fn(async () => {});
-
-	const noop = () => {};
-
-	const setupOpts = {
-		onStart: (noop as PluginBuild['onStart']),
-		resolve: (noop as unknown as PluginBuild['resolve']),
-		onResolve: (noop as PluginBuild['onResolve']),
-		onLoad: (noop as PluginBuild['onLoad']),
-		onDispose: (noop as PluginBuild['onDispose']),
-		esbuild: ({} as typeof esbuild),
-	} satisfies Omit<PluginBuild, 'initialOptions' | 'onEnd'>;
 
 	mock.module('node:fs/promises', {
 		exports: {
@@ -51,31 +39,11 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 	const outputFiles = [
 		{
 			contents: new Uint8Array(),
-			get text() { return decoder.decode(this.contents) },
+			get text() { return 'do NOT use (can’t be cloned)' },
 			hash: 'e1j2s3',
 			path: ejsTemplatePath,
 		},
 	] satisfies OutputFile[];
-
-	function onEndFactory(
-		m = structuredClone(metafile),
-		o = structuredClone(outputFiles),
-	) {
-		const onEnd = (
-			(
-				cb: (result: {
-					metafile: typeof m,
-					outputFiles: typeof o,
-				}) => void
-			) => cb({ metafile: m, outputFiles: o })
-		) as any as PluginBuild['onEnd'];
-
-		return {
-			metafile: m,
-			onEnd,
-			outputFiles: o,
-		};
-	}
 
 	const { compileIndexEJSPlugin: plugin } = await import('./compile-index-ejs.ts');
 
@@ -108,7 +76,7 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 				metafile: m,
 				onEnd,
 				outputFiles: o,
-			} = onEndFactory(metafile, outputFiles);
+			} = onEndFactory(outputFiles);
 
 			// confirm it starts there (so we know the test isn't reporting false success)
 			assert.ok(inKey in m.outputs, 'original metafile output key exists');
@@ -121,7 +89,7 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 
 			const entry = o.find((item) => item.path === outputPath);
 
-			c.assert.snapshot(entry!.text);
+			c.assert.snapshot(decoder.decode(entry!.contents));
 
 			assert.ok(outKey in m.outputs, 'new metafile output key exists');
 			assert.ok(!(inKey in m.outputs), 'old metafile output key removed');
@@ -134,7 +102,7 @@ describe('Compile index.ejs (esbuild plugin)', { concurrency: true }, async () =
 			const {
 				metafile: m,
 				onEnd,
-			} = onEndFactory(metafile, undefined);
+			} = onEndFactory();
 
 			// confirm it starts there (so we know the test isn't reporting false success)
 			assert.ok(inKey in m.outputs, 'original metafile output key exists');

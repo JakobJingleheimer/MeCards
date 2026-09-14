@@ -10,9 +10,11 @@
     "experimental-test-module-mocks": true,
     "experimental-test-coverage": true,
     "test-coverage-include": [
+      "build/**/*.ts",
       "src/**/*.ts"
     ],
     "test-coverage-exclude": [
+      "**/*.fixt.ts",
       "**/*.spec.ts",
       "**/*.spec.tsx",
       "**/*.test.ts",
