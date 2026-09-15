@@ -4,11 +4,12 @@
     "lib": [
       "esnext",
     ],
-		"types": [
-			"node"
-		]
+    "types": [
+      "node",
+    ],
   },
   "include": [
     "./**/*.ts",
   ],
+  "exclude": [],
 }
