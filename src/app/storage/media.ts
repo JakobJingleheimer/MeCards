@@ -59,4 +59,4 @@ const MEDIA_TYPE_TO_COLLECTION = {
 	card: 'cards',
 	logo: 'logos',
 } as const;
-type MediaType = keyof typeof MEDIA_TYPE_TO_COLLECTION;
+export type MediaType = keyof typeof MEDIA_TYPE_TO_COLLECTION;

@@ -1,5 +1,6 @@
 import { media } from '../storage/media.ts';
 
+
 export async function retrieveMerchantLogo(merchantName: string) {
 	if (await media.find(merchantName, 'logo')) return;
 
@@ -37,9 +38,9 @@ export async function retrieveMerchantLogo(merchantName: string) {
 	return url;
 };
 
-const ENTITIES_SEARCH_ENDPOINT = 'https://www.wikidata.org/w/rest.php/wikibase/v1/search/items?language=en&limit=10&q=';
-const ENTITY_META_ENDPOINT = 'https://www.wikidata.org/wiki/Special:EntityData/'
-const MEDIA_ENDPOINT = 'https://api.wikimedia.org/core/v1/commons/file/File:';
+export const ENTITIES_SEARCH_ENDPOINT = 'https://www.wikidata.org/w/rest.php/wikibase/v1/search/items?language=en&limit=10&q=';
+export const ENTITY_META_ENDPOINT = 'https://www.wikidata.org/wiki/Special:EntityData/'
+export const MEDIA_ENDPOINT = 'https://api.wikimedia.org/core/v1/commons/file/File:';
 
 export const composeMerchantSlug = (name: string) => name
 	.split(' ')
