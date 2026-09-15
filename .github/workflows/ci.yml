@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Clean install dependencies
-        run: npm ci
+        run: npm ci --audit=false --ignore-scripts
 
       - name: Check types
         run: node --run types:check
@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Clean install dependencies
-        run: npm ci --audit=false --ignore-scripts
+        run: npm ci --audit=false # scripts are required for happy-dom/canvas
 
       - name: Run vanilla js tests
         run: |
