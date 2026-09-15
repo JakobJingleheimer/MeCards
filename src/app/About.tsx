@@ -63,7 +63,7 @@ export default function About() {
 							{' '}
 							{!!cards.count && (
 								<button
-									className="danger plain size-3xs"
+									className="danger padding-0 plain size-3xs"
 									command="show-modal"
 									commandFor={CONFIRM_MODAL_ID}
 									type="button"

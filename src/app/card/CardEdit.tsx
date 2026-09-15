@@ -134,13 +134,13 @@ export default function CardEdit() {
 	return (
 		<main className="padding-m">
 			<header className="flex split">
-				<a className="btn link" href="/"><ArrowLeft /> Back to list</a>
+				<a className="btn link padding-0" href="/"><ArrowLeft /> Back to list</a>
 
 				{isNew
 				? (<span />)
 				: (
 						<button
-							className="danger plain size-3xs"
+							className="danger padding-0 plain size-3xs"
 							command="show-modal"
 							commandFor={CONFIRM_MODAL_ID}
 							type="button"
