@@ -1,6 +1,10 @@
 import jsbarcode from 'jsbarcode';
 
-export function generateBarcode(number: string, id: string) {
+
+export function generateBarcodeFile(
+	number: string,
+	id: string,
+) {
 	const xmlDocument = document.implementation.createDocument(
 		'http://www.w3.org/1999/xhtml',
 		'html',
@@ -10,10 +14,10 @@ export function generateBarcode(number: string, id: string) {
 
 	jsbarcode(svg, number, { xmlDocument });
 
-	const content = (new XMLSerializer()).serializeToString(svg);
+	const contents = (new XMLSerializer()).serializeToString(svg);
 
 	return new File(
-		[content],
+		[contents],
 		`${id}.svg`,
 		{ type: 'image/svg+xml' },
 	);

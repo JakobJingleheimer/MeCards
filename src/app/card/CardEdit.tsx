@@ -13,7 +13,7 @@ import { useLocation, useRoute } from 'preact-iso';
 import { cards, type CardData } from '../storage/cards.ts';
 import { media } from '../storage/media.ts';
 import { useToaster } from '../toaster/context.tsx';
-import { generateBarcode } from './generate-barcode.ts';
+import { generateBarcodeFile } from './generate-barcode.ts';
 import { composeMerchantSlug, retrieveMerchantLogo } from './merchant-info.ts';
 
 
@@ -111,7 +111,7 @@ export default function CardEdit() {
 		});
 
 		await media.save(
-			generateBarcode(barcode, id),
+			generateBarcodeFile(barcode, id),
 			'card',
 		);
 
