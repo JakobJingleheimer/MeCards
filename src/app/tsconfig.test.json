@@ -2,10 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": [
-      "node"
+      "node",
     ],
   },
   "include": [
     "./**/*.spec.ts",
+    "./**/*.test.ts",
   ],
 }
